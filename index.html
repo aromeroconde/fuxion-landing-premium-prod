@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/Logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tratamiento y Evaluación Celular | FuXion & Advanced Health</title>
+  <meta name="description"
+    content="Nutrición avanzada y celular con FuXion, respaldada por la experiencia médica de Advanced Health. Agenda tu asesoría personalizada hoy." />
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Additional specific styles for layout and animations -->
+  <style>
+    /* Sticky Header with Glassmorphism */
+    .header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      padding: var(--spacing-4) var(--spacing-6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(250, 250, 245, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(227, 227, 222, 0.5);
+      /* ultra soft border */
+    }
+
+    .header-logo {
+      object-fit: contain;
+      transition: opacity 0.3s ease;
+    }
+
+    .header-logo:hover {
+      opacity: 0.8;
+    }
+
+    .header-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      background-color: var(--color-surface-container-highest);
+      color: var(--color-primary);
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .header-btn:hover {
+      background-color: var(--color-primary);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(52, 74, 62, 0.15);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      /* Slightly taller for more premium breathing room */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--spacing-12) var(--spacing-6);
+      overflow: hidden;
+      background-color: var(--color-surface);
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.25;
+      /* Adjusted for cinematic look without overpowering text */
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      filter: saturate(1.2) contrast(1.1);
+      /* Make the bioluminescence pop slightly */
+    }
+
+    /* Hero Text gradient overlay to ensure readability if image gets busy */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, var(--color-surface) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero .label-md {
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-4);
+      display: block;
+      letter-spacing: 0.15em;
+    }
+
+    .hero h1 {
+      margin-bottom: var(--spacing-6);
+      font-size: clamp(2.5rem, 9vw, 4.5rem);
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      margin-bottom: var(--spacing-8);
+      color: var(--color-on-surface-variant);
+      max-width: 90%;
+    }
+
+    .hero-cta {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    /* Animation classes for Cards to make them feel "alive" */
+    .advantage-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-6);
+      margin-top: var(--spacing-8);
+    }
+
+    .advantage-card {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-4);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-lg);
+      transition: background-color 0.4s ease, transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      cursor: default;
+    }
+
+    .advantage-card:hover {
+      background-color: var(--color-surface-container-lowest);
+      transform: translateX(4px);
+    }
+
+    .advantage-icon {
+      width: 48px;
+      height: 48px;
+      background-color: var(--color-surface-container-highest);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-primary);
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease, background-color 0.4s ease;
+    }
+
+    .advantage-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .advantage-card:hover .advantage-icon {
+      transform: scale(1.15) rotate(2deg);
+      box-shadow: 0 10px 20px rgba(52, 74, 62, 0.15);
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    .advantage-content h3 {
+      font-family: var(--font-body);
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      transition: color 0.3s ease;
+    }
+
+    .advantage-card:hover .advantage-content h3 {
+      color: var(--color-primary-container);
+    }
+
+    .advantage-content p {
+      font-size: 0.875rem;
+      color: var(--color-secondary);
+    }
+
+    /* Benefits Grid */
+    .benefit-card {
+      padding: var(--spacing-6);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-surface-container-lowest);
+      border-left: 4px solid var(--color-primary-fixed-dim);
+      margin-bottom: var(--spacing-4);
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+      cursor: default;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(52, 74, 62, 0.08);
+      border-left-color: var(--color-primary);
+    }
+
+    .benefit-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+    }
+
+    .benefit-card h3 svg {
+      margin-right: 10px;
+      color: var(--color-primary);
+      opacity: 0.8;
+      transition: transform 0.4s ease;
+    }
+
+    .benefit-card:hover h3 svg {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+
+    .benefit-card p {
+      font-size: 0.95rem;
+      color: var(--color-on-surface-variant);
+      line-height: 1.6;
+    }
+
+    /* Process Steps */
+    .process-step {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-4);
+      margin-bottom: var(--spacing-6);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-lg);
+      transition: background-color 0.4s ease, transform 0.4s ease;
+    }
+
+    .process-step:hover {
+      background-color: var(--color-surface-container-lowest);
+      transform: translateX(4px);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background-color: var(--color-surface-container-highest);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .process-step:hover .step-number {
+      transform: scale(1.15);
+      background-color: var(--color-primary);
+      color: white;
+      box-shadow: 0 10px 20px rgba(52, 74, 62, 0.2);
+    }
+
+    .step-content h3 {
+      font-family: var(--font-body);
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      transition: color 0.3s ease;
+    }
+
+    .process-step:hover .step-content h3 {
+      color: var(--color-primary);
+    }
+
+    .step-content p {
+      font-size: 0.875rem;
+      color: var(--color-secondary);
+    }
+
+    /* Trust Section */
+    .trust-section {
+      text-align: center;
+      padding: var(--spacing-12) var(--spacing-6);
+    }
+
+    .trust-logos {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-6);
+      margin-top: var(--spacing-8);
+      position: relative;
+    }
+
+    .trust-logos img {
+      max-width: 220px;
+      height: auto;
+      filter: grayscale(100%) opacity(0.8);
+      transition: all 0.5s ease;
+    }
+
+    .trust-logos img:hover {
+      filter: grayscale(0%) opacity(1);
+      transform: scale(1.05);
+    }
+
+    /* Overriding main button for extreme luxury feel */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s ease;
+      z-index: -1;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Sticky Header with Separate Logos -->
+    <header class="header">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <img src="/Logo.png" alt="FuXion" class="header-logo" style="height: 24px;">
+        <span style="color: var(--color-outline-variant); font-size: 1.2rem; font-weight: 300;">|</span>
+        <img src="/logo-advanced-health-COLOR_HORIZONTAL.png" alt="Advanced Health" class="header-logo"
+          style="height: 18px;">
+      </div>
+      <a href="#contacto" class="btn header-btn">Agendar</a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <!-- High-fashion cellular gradient background generated via logic -->
+      <img src="/hero-bg.png" alt="Science Background" class="hero-bg">
+
+      <div class="hero-content">
+        <span class="label-md">El método definitivo</span>
+        <h1 class="display-lg">Despierta tu máximo potencial celular.</h1>
+        <p>Nutrición funcional diseñada por <strong>FuXion</strong>, prescrita con precisión clínica a través de
+          <strong>Advanced Health</strong>.
+        </p>
+
+        <a href="#contacto" class="btn btn-primary hero-cta">Hablar con un Especialista</a>
+      </div>
+    </section>
+
+    <!-- The FuXion Advantage (Why FuXion) with Premium SVGs -->
+    <section class="section bg-layer-low"
+      style="padding: var(--spacing-12) var(--spacing-6); border-radius: var(--radius-lg); margin-top: -2rem; position: relative; z-index: 20; box-shadow: 0 -10px 30px rgba(0,0,0,0.02);">
+      <h2 class="display-md">Ciencia viva para tu cuerpo.</h2>
+      <p style="margin-top: 1rem; color: var(--color-secondary);">Fórmulas únicas que extraen conocimientos
+        ancestrales fusionándolos con los últimos avances en biotecnología.</p>
+
+      <div class="advantage-grid">
+        <!-- Clean Label -->
+        <div class="advantage-card">
+          <div class="advantage-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 22c4.97-4.97 7-9.67 7-13.5A6.5 6.5 0 0 0 12 2a6.5 6.5 0 0 0-7 6.5C5 12.33 7.03 17.03 12 22z">
+              </path>
+              <path d="M12 22V12"></path>
+              <path d="M12 16h2"></path>
+            </svg>
+          </div>
+          <div class="advantage-content">
+            <h3>Pureza Clean Label</h3>
+            <p>100% natural y seguro. Sin químicos, cero azúcares añadidas ni preservantes sintéticos.</p>
+          </div>
+        </div>
+        <!-- Emulxion Tech -->
+        <div class="advantage-card">
+          <div class="advantage-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
+          </div>
+          <div class="advantage-content">
+            <h3>Tecnología Emulxion</h3>
+            <p>Biodisponibilidad insuperable para una asimilación microscópica y resultados inmediatos.</p>
+          </div>
+        </div>
+        <!-- Scientific Backing -->
+        <div class="advantage-card">
+          <div class="advantage-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+              </path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="advantage-content">
+            <h3>Ingredientes Patentados</h3>
+            <p>Protegidos mundialmente por su innovación. Tu salud respaldada por evidencia científica constante.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Aspirational Benefits con Animated Icons -->
+    <section class="section">
+      <span class="label-md" style="margin-bottom: 0.5rem; display: block;">Resultados Clínicos</span>
+      <h2 class="display-md" style="margin-bottom: 2rem;">Transformación desde el Origen</h2>
+
+      <div>
+        <div class="benefit-card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Vitalidad Natural
+          </h3>
+          <p>Supera la fatiga crónica y experimenta un nivel de energía lúcida sostenido durante todo el día, sin
+            decaídas nerviosas.</p>
+        </div>
+        <div class="benefit-card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Equilibrio y Detox
+          </h3>
+          <p>Limpia la pesadez de tu organismo, regula tu biomecánica digestiva y maximiza la absorción de nutrientes
+            vivos.</p>
+        </div>
+        <div class="benefit-card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+            </svg>
+            Claridad Mental
+          </h3>
+          <p>Arquitectura nutricional específica para tus neuronas. Optimiza tu concentración, frena la niebla mental y
+            reduce estrés.</p>
+        </div>
+        <div class="benefit-card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Rejuvenecimiento Celular
+          </h3>
+          <p>Aporta los antioxidantes precisos para ralentizar la oxidación prematura celular, iluminar la piel y
+            blindar tu tejido óseo.</p>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="#contacto" class="btn btn-primary" style="width: 100%;">Quiero Evaluar Mi Caso</a>
+      </div>
+    </section>
+
+    <!-- Consultation Process -->
+    <section class="section bg-layer-low"
+      style="border-radius: var(--radius-lg); margin-top: 2rem; position: relative;">
+      <h2 class="display-md" style="margin-bottom: 2rem;">Inicia Tu Evaluación</h2>
+
+      <div>
+        <div class="process-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Inicia tu Contacto</h3>
+            <p>Escríbenos directamente por WhatsApp para coordinar un espacio íntimo de valoración.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Entrevista Terapéutica</h3>
+            <p>Nuestros asesores en salud revisarán tu rutina biométrica actual, bloqueos físicos y objetivos de salud.
+            </p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Bioselección FuXion</h3>
+            <p>Se te prescribirá un esquema nutricional hiper-específico de FuXion diseñado para las falencias
+              singulares de tu biología.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="#contacto" class="btn btn-secondary" style="width: 100%;">Obtener mi Diagnóstico Gratuito</a>
+      </div>
+    </section>
+
+
+    <!-- Trust / Advanced Health Backing -->
+    <section class="trust-section" style="border-radius: var(--radius-lg);">
+      <h2 class="display-md" style="font-size: 2rem;">Una alianza por el rendimiento absoluto.</h2>
+      <p style="margin-top: 1rem; color: var(--color-secondary);">Para asimilar la máxima expresión biotecnológica, se
+        exige una prescripción superior.</p>
+
+      <div class="trust-logos">
+        <!-- Present in Grayscale, reveal color on hover via CSS classes -->
+        <img src="/cobranding AHC.png" alt="FuXion and Advanced Health Expertise">
+        <p style="font-size: 0.875rem; max-width: 80%; text-align: center;">Advanced Health funge como Distribuidor
+          Autorizado e integrador clínico del poder FuXion.</p>
+      </div>
+    </section>
+
+    <!-- Final CTA / Contact -->
+    <section id="contacto" class="section" style="padding-bottom: var(--spacing-24);">
+      <div
+        style="background-color: var(--color-primary); color: white; padding: var(--spacing-8) var(--spacing-6); border-radius: var(--radius-lg); text-align: center; box-shadow: 0 25px 50px rgba(52,74,62,0.4); position: relative; overflow: hidden;">
+
+        <!-- Background texture inside button area -->
+        <div
+          style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%); pointer-events: none;">
+        </div>
+
+        <h2 style="color: white; margin-bottom: 1rem; font-size: 2.2rem; position: relative;">¿Listo para mutar?</h2>
+        <p style="margin-bottom: 2rem; color: var(--color-primary-fixed-dim); position: relative;">Sin compromiso
+          inicial. Reserva solo 10 minutos para trazar tu nueva ruta biológica de excelencia.</p>
+        <a href="https://wa.me/573000000000?text=Hola,%20quiero%20agendar%20mi%20evaluaci%C3%B3n%20nutricional%20con%20Advanced%20Health"
+          target="_blank" class="btn"
+          style="background-color: white; color: var(--color-primary); width: 100%; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: transform 0.3s ease;">
+          Agendar Sesión Privada
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>
