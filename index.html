@@ -278,6 +278,64 @@
       color: var(--color-secondary);
     }
 
+    .goals-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .goal-card {
+      background-color: var(--color-surface-container-low);
+      padding: 1.25rem 1rem;
+      border-radius: var(--radius-lg);
+      text-align: left;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      color: var(--color-on-surface);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .goal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(52, 74, 62, 0.08);
+      background-color: var(--color-surface-container-lowest);
+      border-color: rgba(52, 74, 62, 0.1);
+    }
+
+    .goal-icon {
+      margin-bottom: 0.75rem;
+      color: var(--color-primary);
+      opacity: 0.7;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .goal-card:hover .goal-icon {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .goal-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      font-family: var(--font-body);
+    }
+
+    .goal-desc {
+      font-size: 0.75rem;
+      color: var(--color-secondary);
+      line-height: 1.35;
+    }
+
+    @media (max-width: 380px) {
+      .goals-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .trust-section {
       text-align: center;
       padding: var(--spacing-12) var(--spacing-6);
@@ -512,6 +570,104 @@
 
       <div style="text-align: center; margin-top: 2rem;">
         <a href="#contacto" class="btn btn-primary" style="width: 100%;">Quiero Evaluar Mi Caso</a>
+      </div>
+    </section>
+
+    <!-- Goal Selection Grid -->
+    <section class="section" style="padding-top: 0;">
+      <div style="text-align: center;">
+        <h2 class="display-md" style="font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.1;">¿Qué quieres mejorar
+          hoy?</h2>
+        <p style="color: var(--color-secondary); font-size: 1rem; max-width: 90%; margin: 0 auto;">Selecciona un tema y
+          nuestro asesor de IA creará un plan personalizado para ti.</p>
+      </div>
+
+      <div class="goals-grid">
+        <!-- Card 1 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+            </svg>
+          </div>
+          <div class="goal-title">Energía y Vitalidad</div>
+          <div class="goal-desc">Energía sostenida todo el día</div>
+        </a>
+        <!-- Card 2 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div class="goal-title">Peso Saludable</div>
+          <div class="goal-desc">Metabolismo y composición</div>
+        </a>
+        <!-- Card 3 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <path d="M12 22C12 22 20 18 20 12C20 6 12 2 12 2C12 2 4 6 4 12C4 18 12 22 12 22Z"></path>
+            </svg>
+          </div>
+          <div class="goal-title">Digestión y Detox</div>
+          <div class="goal-desc">Salud intestinal y limpieza</div>
+        </a>
+        <!-- Card 4 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <path
+                d="M9 21V16H15V21M12 14C9.5 14 7.5 11.5 7.5 9C7.5 6.5 9.5 4 12 4C14.5 4 16.5 6.5 16.5 9C16.5 11.5 14.5 14 12 14Z">
+              </path>
+            </svg>
+          </div>
+          <div class="goal-title">Poder Cerebral</div>
+          <div class="goal-desc">Enfoque y claridad mental</div>
+        </a>
+        <!-- Card 5 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
+          <div class="goal-title">Control de Estrés</div>
+          <div class="goal-desc">Relajación y equilibrio</div>
+        </a>
+        <!-- Card 6 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </div>
+          <div class="goal-title">Dormir Mejor</div>
+          <div class="goal-desc">Calidad de sueño y descanso</div>
+        </a>
+        <!-- Card 7 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="goal-title">Reversa Mi Edad</div>
+          <div class="goal-desc">Longevidad y piel saludable</div>
+        </a>
+        <!-- Card 8 -->
+        <a href="#contacto" class="goal-card">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="goal-title">Inmunidad Fuerte</div>
+          <div class="goal-desc">Defensas naturales y protección</div>
+        </a>
       </div>
     </section>
 
