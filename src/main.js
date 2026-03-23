@@ -121,25 +121,73 @@ async function generateReport() {
       - Equilibrio Mental: ${userData.mental}
       - Hábitos y Obstáculos: ${userData.habits}
 
-      Genera un REPORTE DE BIENESTAR PREMIUM en HTML (solo el contenido interno) con este orden:
-      1. EDAD BIOLÓGICA ESTIMADA: Calcula una edad biológica basada en su estilo de vida (si son saludables, resta años; si no, suma). Explica el porqué brevemente.
-      2. ANÁLISIS DE RUTAS METABÓLICAS: Un resumen de 2-3 frases sobre cómo sus hábitos actuales afectan su meta.
-      3. TU RUTINA IDEAL (Mañana, Tarde, Noche): Un plan de acción diario muy práctico.
-      4. PRESCRIPCIÓN FUXION: Recomienda exactamente 2 productos FuXion explicando su tecnología (Clean Label, etc.) y cómo ayudan específicamente a sus obstáculos.
-      
-      Usa clases CSS: 'report-card' para el contenedor, 'report-title' para los encabezados.
-      Sé inspirador, científico y profesional. No uses markdown, solo HTML.
+      Genera un REPORTE DE BIENESTAR PREMIUM. DEBES RESPONDER ÚNICAMENTE CON UN JSON VÁLIDO. No uses formato markdown alrededor del JSON, solo el objeto JSON puro con esta estructura exacta:
+      {
+        "biologicalAge": {
+          "age": "X años",
+          "explanation": "Breve explicación..."
+        },
+        "metabolicAnalysis": "Resumen de 2 frases...",
+        "routine": {
+          "morning": ["Acción 1", "Acción 2"],
+          "afternoon": ["Acción 1", "Acción 2"],
+          "night": ["Acción 1", "Acción 2"]
+        },
+        "products": [
+          {
+            "name": "Nombre Producto 1",
+            "benefit": "Por qué lo necesita..."
+          },
+          {
+            "name": "Nombre Producto 2",
+            "benefit": "Por qué lo necesita..."
+          }
+        ]
+      }
     `
 
     const result = await model.generateContent(prompt)
     const response = await result.response
-    const text = response.text()
+    let text = response.text()
 
-    // Create a tab-simulated UI or a clean long-form report
+    // Clean potential markdown blocks
+    text = text.replace(/```json/gi, '').replace(/```/g, '').trim()
+    const data = JSON.parse(text)
+
+    // Create a beautifully structured UI template for the report
     const reportHTML = `
-      <div class="report-card">
-        <div class="report-title">Tu Perfil Bio-Optimizado</div>
-        ${text}
+      <div class="premium-report">
+        <div class="pr-header">
+          <h3>Tu Plan Bio-Optimizado</h3>
+          <div class="pr-age-badge">Edad Biológica Estimada: <strong>${data.biologicalAge.age}</strong></div>
+          <p class="pr-subtitle">${data.biologicalAge.explanation}</p>
+        </div>
+        
+        <div class="pr-section">
+          <h4><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Análisis Metabólico</h4>
+          <p>${data.metabolicAnalysis}</p>
+        </div>
+
+        <div class="pr-section">
+          <h4><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Rutina Ideal</h4>
+          <ul class="pr-routine">
+            <li><span class="pr-time">🌤️ Mañana:</span> <span class="pr-action">${data.routine.morning.join(' • ')}</span></li>
+            <li><span class="pr-time">☀️ Tarde:</span> <span class="pr-action">${data.routine.afternoon.join(' • ')}</span></li>
+            <li><span class="pr-time">🌙 Noche:</span> <span class="pr-action">${data.routine.night.join(' • ')}</span></li>
+          </ul>
+        </div>
+
+        <div class="pr-section">
+          <h4><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg> Prescripción FuXion</h4>
+          <div class="pr-products">
+            ${data.products.map(p => `
+              <div class="pr-product">
+                <div class="pr-product-name">${p.name}</div>
+                <div class="pr-product-desc">${p.benefit}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
       </div>
     `
 
@@ -171,6 +219,13 @@ document.querySelectorAll('.goal-card').forEach(card => {
     e.preventDefault()
     const goalTitle = card.querySelector('.goal-title').textContent
     openChat(goalTitle)
+  })
+})
+
+document.querySelectorAll('.start-eval-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    openChat('Bienestar General')
   })
 })
 
