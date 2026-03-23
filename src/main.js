@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 // --- Chatbot Logic ---
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-const MODEL_NAME = import.meta.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash'
+const MODEL_NAME = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.0-flash'
 
 let genAI = null
 let model = null
@@ -21,24 +21,39 @@ const closeChat = document.getElementById('close-chat')
 
 let userData = {
   goal: '',
-  age: '',
-  activity: '',
-  feeling: ''
+  biodata: '', // Age, Weight, Height, Gender
+  sleep: '',   // Hours, quality
+  nutrition: '', // Processed, focus, hydration
+  activity: '', // Strength, cardio, sitting
+  mental: '',   // Stress, purpose
+  habits: ''    // Alcohol/Tabaco, main obstacle
 }
 
 let currentStep = 0
 const steps = [
-  { 
-    field: 'goal', 
-    question: (goal) => `¡Excelente elección! Veo que te interesa mejorar tu **${goal}**. Para darte una recomendación precisa, ¿podrías decirme qué edad tienes?` 
+  {
+    field: 'biodata',
+    question: (goal) => `¡Excelente elección! Veo que te interesa mejorar tu **${goal}**. Para empezar, cuéntame: ¿Qué edad tienes, cuánto mides y pesas? (ej: 35 años, 170cm, 75kg)`
   },
-  { 
-    field: 'activity', 
-    question: () => `¡Entendido! ¿Y cómo describirías tu nivel de actividad física actual? (Sedentario, Moderado, Activo)` 
+  {
+    field: 'sleep',
+    question: () => `Perfecto. Hablemos de tu descanso: ¿Cuántas horas duermes en promedio y cómo calificarías la calidad de tu sueño del 1 al 10?`
   },
-  { 
-    field: 'feeling', 
-    question: () => `Perfecto. Por último, cuéntame brevemente: ¿cuál es el mayor obstáculo que sientes hoy para alcanzar tu meta?` 
+  {
+    field: 'nutrition',
+    question: () => `Entendido. Sobre tu alimentación: ¿Consumes alimentos procesados frecuentemente? ¿Cuánta agua bebes al día?`
+  },
+  {
+    field: 'activity',
+    question: () => `¡Muy bien! ¿Cómo es tu actividad física? ¿Haces ejercicio de fuerza o cardio? ¿Pasas muchas horas sentado?`
+  },
+  {
+    field: 'mental',
+    question: () => `Casi terminamos. ¿Cómo calificarías tu nivel de estrés diario y qué tal sientes tu sentido de propósito o conexión social?`
+  },
+  {
+    field: 'habits',
+    question: () => `Por último: ¿Consumes alcohol o tabaco con frecuencia? ¿Y cuál crees que es tu mayor obstáculo para lograr tu meta de ${userData.goal}?`
   }
 ]
 
@@ -85,39 +100,51 @@ async function handleUserInput() {
 }
 
 async function generateReport() {
-  addMessage('✨ Analizando tu perfil con nuestro sistema de nutrición celular...', true)
-  
+  addMessage('🧬 Analizando tus marcadores biológicos y metas de bienestar...', true)
+
   if (!model) {
     setTimeout(() => {
-      addMessage('Lo siento, el sistema de IA no está configurado correctamente (falta API Key). Por favor, contacta a un especialista por WhatsApp para tu diagnóstico.', true)
+      addMessage('Lo siento, el sistema de IA no está configurado (falta API Key). Por favor, contacta a un especialista por WhatsApp para tu diagnóstico.', true)
     }, 1500)
     return
   }
 
   try {
     const prompt = `
-      Eres un asesor experto en nutrición celular de FuXion y Advanced Health. 
-      Basado en estos datos del usuario:
-      - Objetivo: ${userData.goal}
-      - Edad: ${userData.age}
-      - Nivel de actividad: ${userData.activity}
-      - Obstáculo actual: ${userData.feeling}
+      Eres un Asesor de Bienestar de Élite de FuXion y Advanced Health. 
+      Basado en este perfil profundo:
+      - Meta Principal: ${userData.goal}
+      - Bio Data: ${userData.biodata}
+      - Sueño: ${userData.sleep}
+      - Nutrición: ${userData.nutrition}
+      - Actividad: ${userData.activity}
+      - Equilibrio Mental: ${userData.mental}
+      - Hábitos y Obstáculos: ${userData.habits}
 
-      Genera un REPORTE DE BIENESTAR profesional y motivador en formato HTML (solo el contenido interno, usa clases como 'report-card', 'report-title').
-      1. Saludo breve y validación del objetivo.
-      2. Análisis de su situación actual.
-      3. Recomendación de 1 o 2 productos FuXion específicos explicando el BENEFICIO CELULAR relacionado con su obstáculo.
-      4. Mensaje de cierre invitando a la acción.
+      Genera un REPORTE DE BIENESTAR PREMIUM en HTML (solo el contenido interno) con este orden:
+      1. EDAD BIOLÓGICA ESTIMADA: Calcula una edad biológica basada en su estilo de vida (si son saludables, resta años; si no, suma). Explica el porqué brevemente.
+      2. ANÁLISIS DE RUTAS METABÓLICAS: Un resumen de 2-3 frases sobre cómo sus hábitos actuales afectan su meta.
+      3. TU RUTINA IDEAL (Mañana, Tarde, Noche): Un plan de acción diario muy práctico.
+      4. PRESCRIPCIÓN FUXION: Recomienda exactamente 2 productos FuXion explicando su tecnología (Clean Label, etc.) y cómo ayudan específicamente a sus obstáculos.
       
-      IMPORTANTE: No uses markdown en la respuesta, usa etiquetas HTML estándar. Se breve pero muy profesional y empático.
+      Usa clases CSS: 'report-card' para el contenedor, 'report-title' para los encabezados.
+      Sé inspirador, científico y profesional. No uses markdown, solo HTML.
     `
 
     const result = await model.generateContent(prompt)
     const response = await result.response
     const text = response.text()
-    
-    addMessage(text, true, true)
-    
+
+    // Create a tab-simulated UI or a clean long-form report
+    const reportHTML = `
+      <div class="report-card">
+        <div class="report-title">Tu Perfil Bio-Optimizado</div>
+        ${text}
+      </div>
+    `
+
+    addMessage(reportHTML, true, true)
+
     // Add final CTAs
     const ctaDiv = document.createElement('div')
     ctaDiv.style.marginTop = '1rem'
@@ -125,15 +152,15 @@ async function generateReport() {
     ctaDiv.style.flexDirection = 'column'
     ctaDiv.style.gap = '0.5rem'
     ctaDiv.innerHTML = `
-      <a href="https://wa.me/573000000000?text=Hola!%20Acabo%20de%20hacer%20mi%20evaluación%20de%20${userData.goal}%20y%20quiero%20más%20información." target="_blank" class="btn btn-primary" style="width: 100%; text-align: center;">Hablar con Especialista (WhatsApp)</a>
-      <button onclick="location.reload()" class="btn" style="background: #eee; width: 100%;">Volver a Empezar</button>
+      <a href="https://wa.me/573000000000?text=Hola!%20Acabo%20de%20hacer%20mi%20evaluación%20celular%20de%20${userData.goal}%20y%20quiero%20empezar%20mi%20plan." target="_blank" class="btn btn-primary" style="width: 100%; text-align: center;">Hablar con Especialista (WhatsApp)</a>
+      <button onclick="location.reload()" class="btn" style="background: #eee; width: 100%;">Volver a Evaluarme</button>
     `
     chatMessages.appendChild(ctaDiv)
     chatMessages.scrollTop = chatMessages.scrollHeight
 
   } catch (error) {
     console.error('Error with Gemini:', error)
-    addMessage('Hubo un error al procesar tu reporte. Por favor, intenta de nuevo o contacta a un asesor.', true)
+    addMessage('Hubo un error técnico al generar tu reporte celular. Por favor, intenta de nuevo o solicita una asesoría manual por WhatsApp.', true)
   }
 }
 
