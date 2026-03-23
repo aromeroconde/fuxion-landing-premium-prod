@@ -1,60 +1,161 @@
 import './style.css'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.js'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src=${viteLogo} class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+// --- Chatbot Logic ---
 
-<div class="ticks"></div>
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
+const MODEL_NAME = import.meta.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash'
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src=${viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+let genAI = null
+let model = null
+if (API_KEY && API_KEY !== 'your_api_key_here') {
+  genAI = new GoogleGenerativeAI(API_KEY)
+  model = genAI.getGenerativeModel({ model: MODEL_NAME })
+}
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+const chatModal = document.getElementById('chat-modal')
+const chatMessages = document.getElementById('chat-messages')
+const chatInput = document.getElementById('chat-input')
+const chatSend = document.getElementById('chat-send')
+const closeChat = document.getElementById('close-chat')
 
-setupCounter(document.querySelector('#counter'))
+let userData = {
+  goal: '',
+  age: '',
+  activity: '',
+  feeling: ''
+}
+
+let currentStep = 0
+const steps = [
+  { 
+    field: 'goal', 
+    question: (goal) => `¡Excelente elección! Veo que te interesa mejorar tu **${goal}**. Para darte una recomendación precisa, ¿podrías decirme qué edad tienes?` 
+  },
+  { 
+    field: 'activity', 
+    question: () => `¡Entendido! ¿Y cómo describirías tu nivel de actividad física actual? (Sedentario, Moderado, Activo)` 
+  },
+  { 
+    field: 'feeling', 
+    question: () => `Perfecto. Por último, cuéntame brevemente: ¿cuál es el mayor obstáculo que sientes hoy para alcanzar tu meta?` 
+  }
+]
+
+function addMessage(text, isBot = true, isHTML = false) {
+  const msgDiv = document.createElement('div')
+  msgDiv.className = `msg ${isBot ? 'msg-bot' : 'msg-user'}`
+  if (isHTML) {
+    msgDiv.innerHTML = text
+  } else {
+    msgDiv.textContent = text
+  }
+  chatMessages.appendChild(msgDiv)
+  chatMessages.scrollTop = chatMessages.scrollHeight
+}
+
+function openChat(goalTitle) {
+  chatModal.style.display = 'flex'
+  chatMessages.innerHTML = ''
+  userData.goal = goalTitle
+  currentStep = 0
+  addMessage(steps[0].question(goalTitle))
+}
+
+async function handleUserInput() {
+  const input = chatInput.value.trim()
+  if (!input) return
+
+  chatInput.value = ''
+  addMessage(input, false)
+
+  if (currentStep < steps.length) {
+    const field = steps[currentStep].field
+    userData[field] = input
+    currentStep++
+
+    if (currentStep < steps.length) {
+      setTimeout(() => {
+        addMessage(steps[currentStep].question())
+      }, 600)
+    } else {
+      generateReport()
+    }
+  }
+}
+
+async function generateReport() {
+  addMessage('✨ Analizando tu perfil con nuestro sistema de nutrición celular...', true)
+  
+  if (!model) {
+    setTimeout(() => {
+      addMessage('Lo siento, el sistema de IA no está configurado correctamente (falta API Key). Por favor, contacta a un especialista por WhatsApp para tu diagnóstico.', true)
+    }, 1500)
+    return
+  }
+
+  try {
+    const prompt = `
+      Eres un asesor experto en nutrición celular de FuXion y Advanced Health. 
+      Basado en estos datos del usuario:
+      - Objetivo: ${userData.goal}
+      - Edad: ${userData.age}
+      - Nivel de actividad: ${userData.activity}
+      - Obstáculo actual: ${userData.feeling}
+
+      Genera un REPORTE DE BIENESTAR profesional y motivador en formato HTML (solo el contenido interno, usa clases como 'report-card', 'report-title').
+      1. Saludo breve y validación del objetivo.
+      2. Análisis de su situación actual.
+      3. Recomendación de 1 o 2 productos FuXion específicos explicando el BENEFICIO CELULAR relacionado con su obstáculo.
+      4. Mensaje de cierre invitando a la acción.
+      
+      IMPORTANTE: No uses markdown en la respuesta, usa etiquetas HTML estándar. Se breve pero muy profesional y empático.
+    `
+
+    const result = await model.generateContent(prompt)
+    const response = await result.response
+    const text = response.text()
+    
+    addMessage(text, true, true)
+    
+    // Add final CTAs
+    const ctaDiv = document.createElement('div')
+    ctaDiv.style.marginTop = '1rem'
+    ctaDiv.style.display = 'flex'
+    ctaDiv.style.flexDirection = 'column'
+    ctaDiv.style.gap = '0.5rem'
+    ctaDiv.innerHTML = `
+      <a href="https://wa.me/573000000000?text=Hola!%20Acabo%20de%20hacer%20mi%20evaluación%20de%20${userData.goal}%20y%20quiero%20más%20información." target="_blank" class="btn btn-primary" style="width: 100%; text-align: center;">Hablar con Especialista (WhatsApp)</a>
+      <button onclick="location.reload()" class="btn" style="background: #eee; width: 100%;">Volver a Empezar</button>
+    `
+    chatMessages.appendChild(ctaDiv)
+    chatMessages.scrollTop = chatMessages.scrollHeight
+
+  } catch (error) {
+    console.error('Error with Gemini:', error)
+    addMessage('Hubo un error al procesar tu reporte. Por favor, intenta de nuevo o contacta a un asesor.', true)
+  }
+}
+
+// --- Event Listeners ---
+
+document.querySelectorAll('.goal-card').forEach(card => {
+  card.addEventListener('click', (e) => {
+    e.preventDefault()
+    const goalTitle = card.querySelector('.goal-title').textContent
+    openChat(goalTitle)
+  })
+})
+
+chatSend.addEventListener('click', handleUserInput)
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') handleUserInput()
+})
+
+closeChat.addEventListener('click', () => {
+  chatModal.style.display = 'none'
+})
+
+chatModal.addEventListener('click', (e) => {
+  if (e.target === chatModal) chatModal.style.display = 'none'
+})
