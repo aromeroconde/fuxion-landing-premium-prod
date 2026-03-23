@@ -37,21 +37,19 @@
     }
 
     .header-btn {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 1.2rem;
       font-size: 0.875rem;
-      background-color: var(--color-surface-container-highest);
-      color: var(--color-primary);
       border-radius: var(--radius-full);
       font-weight: 700;
       transition: all 0.3s ease;
-      border: 1px solid transparent;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
     }
 
     .header-btn:hover {
-      background-color: var(--color-primary);
-      color: white;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(52, 74, 62, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(52, 74, 62, 0.25);
     }
 
     /* Hero Section */
@@ -319,12 +317,42 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       transition: left 0.7s ease;
       z-index: -1;
     }
 
     .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-white {
+      background-color: white;
+      color: var(--color-primary);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-white::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(52, 74, 62, 0.1), transparent);
+      transition: left 0.7s ease;
+      z-index: -1;
+    }
+
+    .btn-white:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-white:hover::before {
       left: 100%;
     }
   </style>
@@ -335,13 +363,13 @@
 
     <!-- Sticky Header -->
     <header class="header">
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <img src="/Logo.png" alt="FuXion" class="header-logo" style="height: 24px;">
-        <span style="color: var(--color-outline-variant); font-size: 1.2rem; font-weight: 300;">|</span>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <img src="/Logo.png" alt="FuXion" class="header-logo" style="height: 32px;">
+        <span style="color: var(--color-outline-variant); font-size: 1.5rem; font-weight: 300; opacity: 0.5;">|</span>
         <img src="/logo-advanced-health-COLOR_HORIZONTAL.png" alt="Advanced Health" class="header-logo"
-          style="height: 18px;">
+          style="height: 32px;">
       </div>
-      <a href="#contacto" class="btn header-btn">Iniciar Evaluación</a>
+      <a href="#contacto" class="btn btn-primary header-btn">Iniciar Evaluación</a>
     </header>
 
     <!-- Hero Section -->
@@ -513,7 +541,7 @@
       </div>
 
       <div style="text-align: center; margin-top: 2rem;">
-        <a href="#contacto" class="btn btn-secondary" style="width: 100%;">Obtener mi Diagnóstico Gratuito</a>
+        <a href="#contacto" class="btn btn-primary" style="width: 100%;">Obtener mi Diagnóstico Gratuito</a>
       </div>
     </section>
 
@@ -544,8 +572,8 @@
         <p style="margin-bottom: 2rem; color: var(--color-primary-fixed-dim); position: relative;">Reinvéntate sin
           presiones. Dedica solo unos minutos para conocer exactamente lo que tu cuerpo anhela y descubrir tu mejor
           versión.</p>
-        <a href="#contacto" class="btn"
-          style="background-color: white; color: var(--color-primary); width: 100%; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: transform 0.3s ease;">
+        <a href="#contacto" class="btn btn-white"
+          style="width: 100%; font-size: 1.1rem; transition: transform 0.3s ease;">
           Iniciar Evaluación
         </a>
       </div>
