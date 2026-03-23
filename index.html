@@ -5,12 +5,11 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/Logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Tratamiento y Evaluación Celular | FuXion & Advanced Health</title>
+  <title>Evaluación Nutricional | FuXion & Advanced Health</title>
   <meta name="description"
-    content="Nutrición avanzada y celular con FuXion, respaldada por la experiencia médica de Advanced Health. Agenda tu asesoría personalizada hoy." />
+    content="Nutrición cien por ciento natural con FuXion, guiada por los especialistas de Advanced Health. Inicia tu evaluación gratuita." />
   <link rel="stylesheet" href="./style.css">
 
-  <!-- Additional specific styles for layout and animations -->
   <style>
     /* Sticky Header with Glassmorphism */
     .header {
@@ -26,7 +25,6 @@
       -webkit-backdrop-filter: blur(20px);
       z-index: 100;
       border-bottom: 1px solid rgba(227, 227, 222, 0.5);
-      /* ultra soft border */
     }
 
     .header-logo {
@@ -60,7 +58,6 @@
     .hero {
       position: relative;
       min-height: 85vh;
-      /* Slightly taller for more premium breathing room */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -77,14 +74,11 @@
       height: 100%;
       object-fit: cover;
       opacity: 0.25;
-      /* Adjusted for cinematic look without overpowering text */
       mix-blend-mode: multiply;
       pointer-events: none;
       filter: saturate(1.2) contrast(1.1);
-      /* Make the bioluminescence pop slightly */
     }
 
-    /* Hero Text gradient overlay to ensure readability if image gets busy */
     .hero::after {
       content: '';
       position: absolute;
@@ -126,7 +120,6 @@
       max-width: 320px;
     }
 
-    /* Animation classes for Cards to make them feel "alive" */
     .advantage-grid {
       display: flex;
       flex-direction: column;
@@ -191,7 +184,6 @@
       color: var(--color-secondary);
     }
 
-    /* Benefits Grid */
     .benefit-card {
       padding: var(--spacing-6);
       border-radius: var(--radius-lg);
@@ -235,7 +227,6 @@
       line-height: 1.6;
     }
 
-    /* Process Steps */
     .process-step {
       display: flex;
       align-items: flex-start;
@@ -289,7 +280,6 @@
       color: var(--color-secondary);
     }
 
-    /* Trust Section */
     .trust-section {
       text-align: center;
       padding: var(--spacing-12) var(--spacing-6);
@@ -316,7 +306,6 @@
       transform: scale(1.05);
     }
 
-    /* Overriding main button for extreme luxury feel */
     .btn-primary {
       position: relative;
       overflow: hidden;
@@ -344,7 +333,7 @@
 <body>
   <div class="container">
 
-    <!-- Sticky Header with Separate Logos -->
+    <!-- Sticky Header -->
     <header class="header">
       <div style="display: flex; align-items: center; gap: 0.75rem;">
         <img src="/Logo.png" alt="FuXion" class="header-logo" style="height: 24px;">
@@ -357,13 +346,12 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <!-- High-fashion cellular gradient background generated via logic -->
-      <img src="/hero-bg.png" alt="Science Background" class="hero-bg">
+      <img src="/hero-bg.png" alt="Nature and science" class="hero-bg">
 
       <div class="hero-content">
         <span class="label-md">El método definitivo</span>
-        <h1 class="display-lg">Despierta tu máximo potencial celular.</h1>
-        <p>Nutrición funcional diseñada por <strong>FuXion</strong>, prescrita con precisión clínica a través de
+        <h1 class="display-lg">Despierta tu máximo potencial y vitalidad.</h1>
+        <p>Nutrición funcional diseñada por <strong>FuXion</strong>, con el respaldo profesional de
           <strong>Advanced Health</strong>.
         </p>
 
@@ -371,12 +359,12 @@
       </div>
     </section>
 
-    <!-- The FuXion Advantage (Why FuXion) with Premium SVGs -->
+    <!-- The FuXion Advantage -->
     <section class="section bg-layer-low"
       style="padding: var(--spacing-12) var(--spacing-6); border-radius: var(--radius-lg); margin-top: -2rem; position: relative; z-index: 20; box-shadow: 0 -10px 30px rgba(0,0,0,0.02);">
-      <h2 class="display-md">Ciencia viva para tu cuerpo.</h2>
-      <p style="margin-top: 1rem; color: var(--color-secondary);">Fórmulas únicas que extraen conocimientos
-        ancestrales fusionándolos con los últimos avances en biotecnología.</p>
+      <h2 class="display-md">Lo mejor de la naturaleza para tu cuerpo.</h2>
+      <p style="margin-top: 1rem; color: var(--color-secondary);">Fórmulas únicas que unen la sabiduría de la naturaleza
+        con la innovación constante para potenciar tu bienestar físico y mental.</p>
 
       <div class="advantage-grid">
         <!-- Clean Label -->
@@ -391,8 +379,9 @@
             </svg>
           </div>
           <div class="advantage-content">
-            <h3>Pureza Clean Label</h3>
-            <p>100% natural y seguro. Sin químicos, cero azúcares añadidas ni preservantes sintéticos.</p>
+            <h3>Pureza Garantizada</h3>
+            <p>100% natural, asimilable y seguro. Sin ningún tipo de químicos ni azúcares añadidas en nuestros
+              productos.</p>
           </div>
         </div>
         <!-- Emulxion Tech -->
@@ -404,8 +393,9 @@
             </svg>
           </div>
           <div class="advantage-content">
-            <h3>Tecnología Emulxion</h3>
-            <p>Biodisponibilidad insuperable para una asimilación microscópica y resultados inmediatos.</p>
+            <h3>Fácil Asimilación</h3>
+            <p>Máxima absorción celular para que tu cuerpo aproveche cada nutriente de manera efectiva desde el primer
+              día.</p>
           </div>
         </div>
         <!-- Scientific Backing -->
@@ -421,62 +411,67 @@
             </svg>
           </div>
           <div class="advantage-content">
-            <h3>Ingredientes Patentados</h3>
-            <p>Protegidos mundialmente por su innovación. Tu salud respaldada por evidencia científica constante.</p>
+            <h3>Resultados Comprobados</h3>
+            <p>Fórmulas patenas e ingredientes exclusivos creados para brindarte mejoras reales y tangibles a tu salud.
+            </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Aspirational Benefits con Animated Icons -->
+    <!-- Aspirational Benefits -->
     <section class="section">
-      <span class="label-md" style="margin-bottom: 0.5rem; display: block;">Resultados Clínicos</span>
-      <h2 class="display-md" style="margin-bottom: 2rem;">Transformación desde el Origen</h2>
+      <span class="label-md" style="margin-bottom: 0.5rem; display: block;">Tus Resultados</span>
+      <h2 class="display-md" style="margin-bottom: 2rem;">Transformación Real y Duradera</h2>
 
       <div>
         <div class="benefit-card">
           <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            Vitalidad Natural
+            Vida con Energía
           </h3>
-          <p>Supera la fatiga crónica y experimenta un nivel de energía lúcida sostenido durante todo el día, sin
-            decaídas nerviosas.</p>
+          <p>Deja atrás el cansancio y disfruta de una energía natural, limpia y sostenida durante todo el día, sin
+            bajones bruscos.</p>
         </div>
         <div class="benefit-card">
           <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">
               <path d="M12 22C12 22 20 18 20 12C20 6 12 2 12 2C12 2 4 6 4 12C4 18 12 22 12 22Z"></path>
               <path d="M12 12L12 22"></path>
             </svg>
-            Equilibrio y Detox
+            Desintoxicación Profunda
           </h3>
-          <p>Limpia la pesadez de tu organismo, regula tu biomecánica digestiva y maximiza la absorción de nutrientes
-            vivos.</p>
+          <p>Libera a tu cuerpo de la pesadez, mejora profundamente tu digestión y siéntete ligero y renovado todas las
+            mañanas.</p>
         </div>
         <div class="benefit-card">
           <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
               <line x1="2" y1="12" x2="22" y2="12"></line>
             </svg>
-            Claridad Mental
+            Enfoque Total
           </h3>
-          <p>Arquitectura nutricional específica para tus neuronas. Optimiza tu concentración, frena la niebla mental y
-            reduce estrés.</p>
+          <p>Nutrición precisa para tu mente. Experimenta mayor lucidez, despídete de la distracción y aprende a fluir
+            con menos estrés.</p>
         </div>
         <div class="benefit-card">
           <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">
               <line x1="12" y1="1" x2="12" y2="23"></line>
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             </svg>
-            Rejuvenecimiento Celular
+            El Secreto de la Juventud
           </h3>
-          <p>Aporta los antioxidantes precisos para ralentizar la oxidación prematura celular, iluminar la piel y
-            blindar tu tejido óseo.</p>
+          <p>Dale a tu cuerpo justo lo que necesita para nutrir tu piel desde adentro, protegerte del paso del tiempo y
+            lucir radiante.</p>
         </div>
       </div>
 
@@ -488,31 +483,31 @@
     <!-- Consultation Process -->
     <section class="section bg-layer-low"
       style="border-radius: var(--radius-lg); margin-top: 2rem; position: relative;">
-      <h2 class="display-md" style="margin-bottom: 2rem;">Inicia Tu Evaluación</h2>
+      <h2 class="display-md" style="margin-bottom: 2rem;">Comienza Tu Transformación</h2>
 
       <div>
         <div class="process-step">
           <div class="step-number">1</div>
           <div class="step-content">
-            <h3>Inicia tu Evaluación</h3>
-            <p>Interactúa con nuestro asesor inteligente en esta página para comenzar tu valoración inicial de
-              inmediato.</p>
+            <h3>Da el Primer Paso</h3>
+            <p>Responde un par de preguntas a través de nuestro chat interactivo para que conozcamos tus objetivos de
+              bienestar.</p>
           </div>
         </div>
         <div class="process-step">
           <div class="step-number">2</div>
           <div class="step-content">
-            <h3>Entrevista Terapéutica</h3>
-            <p>Nuestros asesores en salud revisarán tu rutina biométrica actual, bloqueos físicos y objetivos de salud.
-            </p>
+            <h3>Evaluación Personalizada</h3>
+            <p>Nuestros expertos y el equipo de Advanced Health revisarán tus respuestas para entender qué necesita tu
+              cuerpo hoy.</p>
           </div>
         </div>
         <div class="process-step">
           <div class="step-number">3</div>
           <div class="step-content">
-            <h3>Bioselección FuXion</h3>
-            <p>Se te prescribirá un esquema nutricional hiper-específico de FuXion diseñado para las falencias
-              singulares de tu biología.</p>
+            <h3>Descubre tu Ruta Ideal</h3>
+            <p>Recibirás una recomendación nutricional de FuXion diseñada a la medida, pensada exclusivamente para
+              alcanzar tus metas personales.</p>
           </div>
         </div>
       </div>
@@ -522,18 +517,16 @@
       </div>
     </section>
 
-
     <!-- Trust / Advanced Health Backing -->
     <section class="trust-section" style="border-radius: var(--radius-lg);">
-      <h2 class="display-md" style="font-size: 2rem;">Una alianza por el rendimiento absoluto.</h2>
-      <p style="margin-top: 1rem; color: var(--color-secondary);">Para asimilar la máxima expresión biotecnológica, se
-        exige una prescripción superior.</p>
+      <h2 class="display-md" style="font-size: 2rem;">Una alianza por tu bienestar integral.</h2>
+      <p style="margin-top: 1rem; color: var(--color-secondary);">La mejor nutrición natural, guiada con responsabilidad
+        por especialistas de la salud.</p>
 
       <div class="trust-logos">
-        <!-- Present in Grayscale, reveal color on hover via CSS classes -->
-        <img src="/cobranding AHC.png" alt="FuXion and Advanced Health Expertise">
-        <p style="font-size: 0.875rem; max-width: 80%; text-align: center;">Advanced Health funge como Distribuidor
-          Autorizado e integrador clínico del poder FuXion.</p>
+        <img src="/cobranding AHC.png" alt="Advanced Health respaldando a FuXion">
+        <p style="font-size: 0.875rem; max-width: 80%; text-align: center;">Advanced Health es nuestro aliado
+          profesional en salud, asegurando que tu experiencia con FuXion sea óptima.</p>
       </div>
     </section>
 
@@ -542,14 +535,15 @@
       <div
         style="background-color: var(--color-primary); color: white; padding: var(--spacing-8) var(--spacing-6); border-radius: var(--radius-lg); text-align: center; box-shadow: 0 25px 50px rgba(52,74,62,0.4); position: relative; overflow: hidden;">
 
-        <!-- Background texture inside button area -->
         <div
           style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%); pointer-events: none;">
         </div>
 
-        <h2 style="color: white; margin-bottom: 1rem; font-size: 2.2rem; position: relative;">¿Listo para mutar?</h2>
-        <p style="margin-bottom: 2rem; color: var(--color-primary-fixed-dim); position: relative;">Sin compromiso
-          inicial. Reserva solo 10 minutos para trazar tu nueva ruta biológica de excelencia.</p>
+        <h2 style="color: white; margin-bottom: 1rem; font-size: 2.2rem; position: relative;">¿Listo para transformar tu
+          vida?</h2>
+        <p style="margin-bottom: 2rem; color: var(--color-primary-fixed-dim); position: relative;">Reinvéntate sin
+          presiones. Dedica solo unos minutos para conocer exactamente lo que tu cuerpo anhela y descubrir tu mejor
+          versión.</p>
         <a href="#contacto" class="btn"
           style="background-color: white; color: var(--color-primary); width: 100%; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: transform 0.3s ease;">
           Iniciar Evaluación
