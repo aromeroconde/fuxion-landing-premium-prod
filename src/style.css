@@ -432,3 +432,104 @@ code {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Report Modal Upgrade */
+.report-dashboard {
+  animation: modal-slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.report-tabs button.active {
+  color: var(--color-primary) !important;
+  border-bottom-color: var(--color-primary) !important;
+}
+
+.badge-premium {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.products-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.pr-card {
+  background: var(--color-surface-container);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.pr-card:hover {
+  transform: translateY(-5px);
+}
+
+.pr-card h5 {
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.pr-card p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  color: var(--color-secondary-dim);
+}
+
+.pr-card .btn-sm {
+  align-self: flex-start;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.25rem;
+}
+
+.routine-timeline {
+  border-left: 2px dashed var(--color-surface-container);
+  padding-left: 2rem;
+  margin-left: 1rem;
+}
+
+.time-marker {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -3.25rem;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 600px) {
+  .report-dashboard {
+    margin: 0;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .report-hero h2 {
+    font-size: 1.5rem;
+  }
+
+  .report-body {
+    padding: 1.5rem;
+  }
+}

@@ -12,6 +12,7 @@
     "vite": "^8.0.1"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1"
+    "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.100.0"
   }
 }
