@@ -233,20 +233,23 @@ async function generateReport() {
     chatModal.style.display = 'none';
     reportModal.style.display = 'block';
 
-    // Add Download PDF Button if not already there
-    if (!document.getElementById('download-pdf-btn')) {
-      const downloadBtn = document.createElement('button');
-      downloadBtn.id = 'download-pdf-btn';
-      downloadBtn.className = 'btn btn-secondary';
-      downloadBtn.style.width = '100%';
-      downloadBtn.style.marginTop = '1rem';
-      downloadBtn.style.backgroundColor = '#f0f0f0';
-      downloadBtn.style.color = 'var(--color-primary)';
-      downloadBtn.style.border = '1px solid var(--color-primary)';
-      downloadBtn.innerHTML = '📄 Descargar Versión PDF (BETA)';
-      downloadBtn.onclick = downloadPDF;
-      document.getElementById('lead-form-content').appendChild(downloadBtn);
-    }
+    // Add Download PDF Button to both containers to ensure visibility
+    const containers = ['lead-form-content', 'lead-success'];
+    containers.forEach(containerId => {
+      const container = document.getElementById(containerId);
+      if (container && !container.querySelector('.download-pdf-btn')) {
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'btn btn-secondary download-pdf-btn';
+        downloadBtn.style.width = '100%';
+        downloadBtn.style.marginTop = '1rem';
+        downloadBtn.style.backgroundColor = '#f0f0f0';
+        downloadBtn.style.color = 'var(--color-primary)';
+        downloadBtn.style.border = '1px solid var(--color-primary)';
+        downloadBtn.innerHTML = '📄 Descargar Versión PDF (BETA)';
+        downloadBtn.onclick = downloadPDF;
+        container.appendChild(downloadBtn);
+      }
+    });
 
   } catch (error) {
     console.error('Report Generation Error:', error);
@@ -256,11 +259,13 @@ async function generateReport() {
 
 async function downloadPDF() {
   const element = document.querySelector('.report-dashboard');
-  const btn = document.getElementById('download-pdf-btn');
-  const originalBtnText = btn.innerHTML;
+  const btns = document.querySelectorAll('.download-pdf-btn');
 
-  btn.disabled = true;
-  btn.innerHTML = '⏳ Generando PDF...';
+  btns.forEach(btn => {
+    btn.disabled = true;
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Generando PDF...';
+  });
 
   try {
     // Scroll to top of modal to ensure capture starts from top
@@ -293,17 +298,21 @@ async function downloadPDF() {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(`Reporte_Bienestar_${userName.replace(/\s+/g, '_')}.pdf`);
 
-    btn.innerHTML = '✅ PDF Descargado';
-    setTimeout(() => {
-      btn.disabled = false;
-      btn.innerHTML = originalBtnText;
-    }, 3000);
+    btns.forEach(btn => {
+      btn.innerHTML = '✅ PDF Descargado';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = btn.dataset.originalText || '📄 Descargar Versión PDF (BETA)';
+      }, 3000);
+    });
 
   } catch (error) {
     console.error('Error generating PDF:', error);
     alert('Hubo un error al generar el PDF. Por favor, intenta de nuevo.');
-    btn.disabled = false;
-    btn.innerHTML = originalBtnText;
+    btns.forEach(btn => {
+      btn.disabled = false;
+      btn.innerHTML = btn.dataset.originalText || '📄 Descargar Versión PDF (BETA)';
+    });
   }
 }
 
