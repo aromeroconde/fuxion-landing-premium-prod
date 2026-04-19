@@ -363,16 +363,16 @@ async function generatePDFAttachment() {
 
     // Page 4: ROADMAP
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative; display: flex; flex-direction: column;">
-      <div style="max-height: 200px; overflow: hidden; position: relative;">
-        <img src="/images/pdf_lifestyle.png" style="width: 100%; height: 200px; object-fit: cover; opacity: 0.7;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.8), transparent);"></div>
-        <div style="position: absolute; bottom: 20px; left: 25mm; color: white;">
-          <h3 style="margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 02</h3>
-          <h2 style="margin: 5px 0 0; font-size: 32px;">Tu Hoja de Ruta Diaria</h2>
+      <div style="max-height: 120px; overflow: hidden; position: relative;">
+        <img src="/images/pdf_lifestyle.png" style="width: 100%; height: 120px; object-fit: cover; opacity: 0.8;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.4), transparent);"></div>
+        <div style="position: absolute; bottom: 15px; left: 25mm; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+          <h3 style="margin: 0; font-size: 12px; letter-spacing: 2px;">SECCIÓN 02</h3>
+          <h2 style="margin: 5px 0 0; font-size: 24px;">Tu Hoja de Ruta Diaria</h2>
         </div>
       </div>
 
-      <div style="padding: 15mm 25mm; flex: 1;">
+      <div style="padding: 10mm 25mm; flex: 1;">
         <div style="position: relative; border-left: 2px solid #8c9b8a; padding-left: 30px; margin-left: 10px;">
           <div style="margin-bottom: 25px;">
             <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
@@ -646,17 +646,19 @@ async function saveLead(e) {
     const productList = currentReportData?.products?.map(p => `• *${p.name}*`).join('\n') || '• Kit Personalizado';
     const waGoal = currentGoal || 'Mejorar mi Salud';
     const waBadge = currentReportData?.biologicalAge?.badge || 'Alerta Metabólica';
+    const realAgeNum = age; // 'age' is defined at the start of submitHandler from window.userAge
+    const bioAgeNum = currentReportData?.biologicalAge?.age || '??';
 
     const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud en la web y me urge empezar.
 
 📌 *RESUMEN DE MI DIAGNÓSTICO:*
 • *Meta:* ${waGoal}
-• *Estado:* ${waBadge} (${currentReportData?.biologicalAge?.age || '??'} años)
+• *Estado:* ${waBadge} (Edad Real: ${realAgeNum} - Biol: ${bioAgeNum})
 
 📦 *MI KIT RECOMENDADO:*
 ${productList}
 
-Camila, necesito coordinar mi asesoría para empezar con estos productos y recibir mi plan detallado. Mi correo es ${email}.`;
+Camila, necesito coordinar mi asesoría para empezar con estos productos y agendar mi cita. Mi correo es ${email}.`;
 
     if (finalWaLink) {
       finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
