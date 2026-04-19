@@ -63,7 +63,7 @@ let isGeneratingReport = false;
 let currentReportData = null;
 let userName = 'Usuario';
 
-const WHATSAPP_NUMBER = '573007044302';
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '573007044302';
 
 function addMessage(text, isBot = true, isHTML = false) {
   const msgDiv = document.createElement('div')
