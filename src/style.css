@@ -535,3 +535,97 @@ code {
     padding: 1.5rem;
   }
 }
+
+/* --- PDF Template Styles --- */
+#pdf-template {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 800px;
+  background: white;
+  color: #333;
+  font-family: 'Outfit', sans-serif;
+}
+
+.pdf-page {
+  width: 800px;
+  min-height: 1120px;
+  padding: 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: white;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 4px solid #344a3e;
+  padding-bottom: 20px;
+}
+
+.pdf-logo {
+  font-size: 28px;
+  font-weight: 800;
+  color: #344a3e;
+  letter-spacing: -1px;
+}
+
+.pdf-title {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.pdf-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #344a3e;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pdf-content {
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.pdf-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #f0f4f1;
+  color: #344a3e;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.pdf-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  justify-content: space-between;
+}
+
+.pdf-product-card {
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.pdf-routine-box {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}

@@ -258,45 +258,130 @@ async function generateReport() {
 }
 
 async function downloadPDF() {
-  const element = document.querySelector('.report-dashboard');
   const btns = document.querySelectorAll('.download-pdf-btn');
+  const data = currentReportData;
+
+  if (!data) {
+    alert('No hay datos suficientes para generar el PDF. Por favor, realiza la evaluación de nuevo.');
+    return;
+  }
 
   btns.forEach(btn => {
     btn.disabled = true;
     btn.dataset.originalText = btn.innerHTML;
-    btn.innerHTML = '⏳ Generando PDF...';
+    btn.innerHTML = '⏳ Generando PDF Profesional...';
   });
 
   try {
-    // Scroll to top of modal to ensure capture starts from top
-    document.getElementById('report-modal').scrollTop = 0;
+    // Create the Template Container
+    const pdfContainer = document.createElement('div');
+    pdfContainer.id = 'pdf-template';
 
-    // Show all tabs temporarily to capture everything? 
-    // Actually, usually we capture only the active tab or a consolidated view.
-    // For now, let's capture the dashboard as is (active tab).
+    // Page 1: Diagnosis
+    const page1 = document.createElement('div');
+    page1.className = 'pdf-page';
+    page1.innerHTML = `
+      <div class="pdf-header">
+        <div class="pdf-logo">FuXion & Advanced Health</div>
+        <div style="text-align: right; font-size: 10px;">ID: ${Date.now()}</div>
+      </div>
+      <div class="pdf-title">Plan de Transformación Personalizado</div>
+      <div class="pdf-badge">Edad Biológica: ${data.biologicalAge.age} • ${data.biologicalAge.badge}</div>
+      
+      <div class="pdf-section-title">Análisis Metabólico</div>
+      <div class="pdf-content">${data.metabolicAnalysis}</div>
+      
+      <div class="pdf-section-title">Explicación Biológica</div>
+      <div class="pdf-content">${data.bioExplanation}</div>
+      
+      <div class="pdf-footer">
+        <span>Preparado por Camila - Especialista en Nutrición IA</span>
+        <span>Página 1</span>
+      </div>
+    `;
+    pdfContainer.appendChild(page1);
 
-    // Hide UI elements not needed in PDF
-    const closeBtn = document.getElementById('close-report');
-    const tabs = document.querySelector('.report-tabs');
-    if (closeBtn) closeBtn.style.display = 'none';
+    // Page 2: Routine
+    const page2 = document.createElement('div');
+    page2.className = 'pdf-page';
+    page2.innerHTML = `
+      <div class="pdf-header">
+        <div class="pdf-logo">FuXion Plan</div>
+      </div>
+      <div class="pdf-section-title">Tu Rutina Diaria de Bienestar</div>
+      
+      <div class="pdf-routine-box">
+        <strong>🌅 Mañana (Activación):</strong><br>
+        <div class="pdf-content">${data.routine.morning}</div>
+      </div>
+      <div class="pdf-routine-box">
+        <strong>☀️ Tarde (Consolidación):</strong><br>
+        <div class="pdf-content">${data.routine.afternoon}</div>
+      </div>
+      <div class="pdf-routine-box">
+        <strong>🌙 Noche (Recuperación):</strong><br>
+        <div class="pdf-content">${data.routine.night}</div>
+      </div>
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff'
-    });
+      <div class="pdf-footer">
+        <span>© 2026 FuXion & Advanced Health</span>
+        <span>Página 2</span>
+      </div>
+    `;
+    pdfContainer.appendChild(page2);
 
-    if (closeBtn) closeBtn.style.display = 'flex';
+    // Page 3: Products
+    const page3 = document.createElement('div');
+    page3.className = 'pdf-page';
+    page3.innerHTML = `
+      <div class="pdf-header">
+        <div class="pdf-logo">Productos FuXion</div>
+      </div>
+      <div class="pdf-section-title">Sugerencias Nutracéuticas</div>
+      
+      ${data.products.map(p => `
+        <div class="pdf-product-card">
+          <strong style="color: #344a3e; font-size: 16px;">${p.name}</strong>
+          <div class="pdf-content" style="margin-top: 8px;">${p.benefit}</div>
+        </div>
+      `).join('')}
 
-    const imgData = canvas.toDataURL('image/png');
+      <div style="margin-top: 30px; padding: 20px; border: 2px dashed #8c9b8a; border-radius: 12px; font-size: 13px; font-style: italic;">
+        Nota: Estas recomendaciones son generadas por nuestro sistema inteligente basado en tu perfil. Consulta con tu asesor para personalizar las cantidades.
+      </div>
+
+      <div class="pdf-footer">
+        <span>www.advancedhealth.fuxion.com</span>
+        <span>Página 3</span>
+      </div>
+    `;
+    pdfContainer.appendChild(page3);
+
+    document.body.appendChild(pdfContainer);
+
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    const pdfPages = pdfContainer.querySelectorAll('.pdf-page');
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    for (let i = 0; i < pdfPages.length; i++) {
+      const canvas = await html2canvas(pdfPages[i], {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    }
+
     pdf.save(`Reporte_Bienestar_${userName.replace(/\s+/g, '_')}.pdf`);
+
+    // Cleanup
+    document.body.removeChild(pdfContainer);
 
     btns.forEach(btn => {
       btn.innerHTML = '✅ PDF Descargado';
