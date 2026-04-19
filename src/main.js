@@ -207,12 +207,20 @@ async function generateReport() {
         "pdfExtendedData": {
           "detailedAnalysis": "Un análisis profundo y profesional de la condición del usuario (3-4 párrafos)...",
           "biologicalDeepDive": "Explicación detallada de los procesos bioquímicos afectados...",
-          "lifestyleRecommendations": "Consejos adicionales sobre sueño, estrés y actividad física...",
+          "lifestyleRecommendations": "Consejos integrales sobre sueño y control de estrés...",
+          "nutritionTips": [
+            { "title": "Tip Nutricional 1", "description": "Pauta de alimentación específica para su bio-disfunción..." },
+            { "title": "Tip Nutricional 2", "description": "Pauta de alimentación específica..." }
+          ],
+          "exerciseTips": [
+            { "title": "Movimiento Estratégico 1", "description": "Rutina o ejercicio recomendado..." },
+            { "title": "Movimiento Estratégico 2", "description": "Rutina o ejercicio recomendado..." }
+          ],
           "productsExtended": [
             { 
               "name": "Producto 1", 
-              "fullDescription": "Descripción detallada del producto, sus componentes clave y por qué es vital para este caso específico...",
-              "howToUse": "Instrucciones precisas de consumo..."
+              "fullDescription": "Descripción detallada del producto, sus componentes clave y por qué es vital para su metabolismo...",
+              "howToUse": "Instrucciones precisas biomecánicas de consumo..."
             }
           ]
         }
@@ -263,134 +271,97 @@ async function generateReport() {
 }
 
 async function generatePDFAttachment() {
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4'
-  });
-
-  const pdfContainer = document.createElement('div');
-  pdfContainer.id = 'print-template';
-  pdfContainer.style.position = 'fixed';
-  pdfContainer.style.left = '-9999px';
-  pdfContainer.style.top = '0';
-  pdfContainer.style.width = '210mm'; // A4 Width
-  pdfContainer.style.backgroundColor = '#ffffff';
-  pdfContainer.style.fontFamily = "'Segoe UI', Roboto, sans-serif";
-
   const data = currentReportData;
+  if (!data) return null;
   const ext = data.pdfExtendedData || {};
-  const today = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  // Helper for gauge color
-  const getGaugeColor = (age) => {
-    if (age <= 25) return '#2e7d32'; // Optimal
-    if (age <= 40) return '#f9a825'; // Warning
-    return '#c62828'; // Critical
-  };
+  const products = ext.productsExtended || data.products || [];
+  const productChunks = [];
+  for (let i = 0; i < products.length; i += 2) {
+    productChunks.push(products.slice(i, i + 2));
+  }
 
-  const sections = [
-    // Page 1: COVER PAGE
-    `<div class="pdf-page" style="padding: 0; min-height: 297mm; display: flex; flex-direction: column; position: relative; background: #344a3e;">
-      <div style="height: 60%; width: 100%; position: relative; overflow: hidden;">
-        <img src="/images/pdf_cover.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 150px; background: linear-gradient(transparent, #344a3e);"></div>
+  const finalPages = [
+    // Page 1: COVER
+    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #344a3e; color: white; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+      <img src="/images/pdf_cover.png" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0.4;">
+      <div style="position: relative; z-index: 2; padding: 40mm 25mm; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+        <div style="font-size: 14px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Reporte Bio-Individual</div>
+        <h1 style="font-size: 64px; margin: 0; line-height: 1.1; font-weight: 800; letter-spacing: -1px;">El Camino a tu <br><span style="color: #c9e2d1;">Mejor Versión</span></h1>
+        <div style="width: 80px; height: 4px; background: #c9e2d1; margin: 40px 0;"></div>
+        <p style="font-size: 20px; opacity: 0.9; max-width: 80%; line-height: 1.6;">Análisis clínico detallado preparado exclusivamente para <strong>${userName}</strong>.</p>
       </div>
-      
-      <div style="padding: 40px; color: white; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: left;">
-        <h1 style="font-size: 48px; margin: 0; font-weight: 800; line-height: 1;">REPORTE DE<br>BIENESTAR</h1>
-        <div style="width: 60px; height: 6px; background: #8c9b8a; margin: 25px 0;"></div>
-        <p style="font-size: 20px; text-transform: uppercase; letter-spacing: 2px; color: #8c9b8a; margin-bottom: 40px;">Evaluación Nutracéutica de Alta Precisión</p>
-        
-        <div style="margin-top: auto;">
-          <p style="font-size: 16px; margin: 0; opacity: 0.7;">PREPARADO PARA:</p>
-          <h2 style="font-size: 32px; margin: 5px 0 0;">${userName}</h2>
-          <p style="font-size: 14px; margin: 10px 0 0; color: #8c9b8a;">${today}</p>
+      <div style="position: relative; z-index: 2; padding: 25mm; background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Emisión</div>
+          <div style="font-size: 16px; font-weight: bold;">${new Date().toLocaleDateString()}</div>
         </div>
-      </div>
-      
-      <div style="padding: 20px 40px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center;">
-         <span style="font-size: 12px; letter-spacing: 1px;">FU XION / ADVANCED HEALTH</span>
-         <span style="font-size: 12px; opacity: 0.5;">© 2026 CLINICAL SERIES</span>
+        <div style="text-align: right;">
+          <div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Institución</div>
+          <div style="font-size: 16px; font-weight: bold;">ADVANCED HEALTH</div>
+        </div>
       </div>
     </div>`,
 
-    // Page 2: BIOLOGICAL ANALYSIS & GAUGE
-    `<div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #fff;">
+    // Page 2: CLINICAL DIAGNOSIS
+    `<div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #fff; position: relative;">
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
         <div>
           <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 01</h3>
           <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 28px;">Diagnóstico Biológico</h2>
         </div>
-        <div style="text-align: right;">
-           <div style="font-size: 12px; color: #8c9b8a;">ESTADO DE SALUD</div>
-           <div style="font-size: 14px; font-weight: bold; color: ${getGaugeColor(data.biologicalAge.age)};">${data.biologicalAge.badge}</div>
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 30px; align-items: center; background: #f8f9f8; padding: 30px; border-radius: 20px; margin-bottom: 40px;">
-        <div style="flex: 1; text-align: center; position: relative;">
-          <div style="font-size: 80px; font-weight: 800; color: #344a3e; line-height: 1;">${data.biologicalAge.age}</div>
-          <div style="font-size: 12px; color: #8c9b8a; letter-spacing: 2px;">EDAD BIOLÓGICA</div>
-        </div>
-        <div style="flex: 2;">
-          <h4 style="margin: 0 0 10px; color: #344a3e;">¿Qué significa esto?</h4>
-          <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 0;">${ext.biologicalDeepDive || data.bioExplanation}</p>
+        <div style="background: #f0f7f2; padding: 15px 25px; border-radius: 15px; text-align: center; border: 1px solid #c9e2d1;">
+          <div style="font-size: 10px; color: #344a3e; text-transform: uppercase; letter-spacing: 1px;">Edad Biológica</div>
+          <div style="font-size: 32px; font-weight: 800; color: #344a3e;">${data.biologicalAge?.age || 'N/A'}</div>
+          <div style="font-size: 12px; font-weight: bold; color: #8c9b8a;">${data.biologicalAge?.badge || ''}</div>
         </div>
       </div>
 
       <div style="margin-bottom: 40px;">
-        <h3 style="color: #344a3e; border-bottom: 1px solid #eee; padding-bottom: 15px; font-size: 18px;">🧬 Análisis Situacional</h3>
-        <p style="line-height: 1.8; color: #333; font-size: 14px; text-align: justify; margin-top: 20px;">${ext.detailedAnalysis || data.metabolicAnalysis}</p>
+        <h4 style="color: #344a3e; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px;">🔬 Análisis Metabólico Profundo</h4>
+        <div style="font-size: 13px; line-height: 1.8; color: #444; margin-top: 15px;">${ext.detailedAnalysis || data.metabolicAnalysis}</div>
       </div>
 
-      <div style="background: #344a3e; color: white; padding: 25px; border-radius: 15px;">
-        <h4 style="margin: 0 0 10px; color: #8c9b8a; font-size: 14px;">NOTA CLÍNICA</h4>
-        <p style="font-size: 13px; line-height: 1.5; margin: 0; opacity: 0.9;">Tu cuerpo está enviando señales claras a través de tus indicadores metabólicos. Este reporte es el primer paso para corregir la trayectoria biológica y optimizar tu rendimiento sistémico.</p>
+      <div style="margin-bottom: 40px; background: #fbfbfb; padding: 30px; border-radius: 20px;">
+        <h4 style="color: #344a3e; margin: 0 0 15px; font-size: 16px;">🧬 Fundamento Bioquímico</h4>
+        <div style="font-size: 13px; line-height: 1.8; color: #555;">${ext.biologicalDeepDive || data.bioExplanation}</div>
+      </div>
+      
+      <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 10px; color: #999;">
+        <span>FUXION SCIENCE LABS</span>
+        <span>${userName} - Reporte Confidencial</span>
       </div>
     </div>`,
 
-    // Page 3: SCIENCE & PHILOSOPHY (FuXion)
-    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative;">
+    // Page 3: THE PHILOSOPHY
+    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #f8f9f8; position: relative; display: flex; flex-direction: column;">
       <div style="height: 35%; position: relative;">
         <img src="/images/pdf_science.png" style="width: 100%; height: 100%; object-fit: cover;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(52, 74, 62, 0.4);"></div>
-        <div style="position: absolute; bottom: 30px; left: 25mm; color: white;">
-          <h3 style="margin: 0; font-size: 14px; letter-spacing: 2px;">LA CIENCIA DETRÁS</h3>
-          <h2 style="margin: 5px 0 0; font-size: 32px;">Filosofía FuXion</h2>
-        </div>
+        <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(0,0,0,0.4), transparent);"></div>
       </div>
-
-      <div style="padding: 25mm;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-          <div>
-            <h4 style="color: #344a3e; font-size: 18px; margin-bottom: 15px;">El Poder de los Nutracéuticos</h4>
-            <p style="font-size: 13px; line-height: 1.7; color: #555; text-align: justify;">
-              En FuXion, rescatamos conocimientos ancestrales de culturas milenarias (Amazónicas, Andinas y Orientales) y los fusionamos con la biotecnología moderna. 
-              Extraemos solo el <strong>principio activo</strong> de las plantas y frutas, eliminando azúcares y rellenos innecesarios.
-            </p>
+      <div style="padding: 25mm; flex: 1;">
+        <h2 style="color: #344a3e; font-size: 32px; margin-bottom: 20px;">Filosofía de Salud Plena</h2>
+        <p style="font-size: 15px; line-height: 1.8; color: #444;">
+          En FuXion, entendemos que la salud no es solo la ausencia de enfermedad, sino un estado de vitalidad óptima. 
+          Nuestra tecnología de <strong>Fusión Nutracéutica®</strong> combina los conocimientos de culturas ancestrales (Andinas, Amazónicas, Mesoamericanas y Asiáticas) 
+          con los últimos avances científicos en biotecnología aplicada a la nutrición humana.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
+          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <div style="font-size: 24px; margin-bottom: 10px;">🛡️</div>
+            <strong style="color: #344a3e;">Limpieza Vital</strong>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">Eliminamos toxinas para que tus células respiren.</p>
           </div>
-          <div>
-            <h4 style="color: #344a3e; font-size: 18px; margin-bottom: 15px;">Advanced Health</h4>
-            <p style="font-size: 13px; line-height: 1.7; color: #555; text-align: justify;">
-              Como tu socio en bienestar integral, Advanced Health utiliza herramientas de personalización avanzadas para asegurar que cada recomendación se alinee perfectamente con tus metas de vitalidad y longevidad.
-            </p>
-          </div>
-        </div>
-
-        <div style="margin-top: 50px; border-top: 1px solid #eee; padding-top: 40px;">
-          <div style="background: #f8f9f8; padding: 25px; border-radius: 10px; display: flex; align-items: center; gap: 20px;">
-             <div style="font-size: 30px;">🧪</div>
-             <div>
-               <h4 style="margin: 0; color: #344a3e;">Nuestra Promesa</h4>
-               <p style="font-size: 12px; color: #666; margin: 5px 0 0;">Certificaciones Clean Label: Productos 100% naturales, sin GMO, ni colorantes artificiales. Ciencia pura en cada sobre.</p>
-             </div>
+          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <div style="font-size: 24px; margin-bottom: 10px;">⚡</div>
+            <strong style="color: #344a3e;">Nutrición Celular</strong>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">Activamos tu metabolismo con micro-nutrientes vivos.</p>
           </div>
         </div>
       </div>
     </div>`,
 
-    // Page 4: PERSONALIZED ROADMAP
+    // Page 4: ROADMAP
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative;">
       <div style="height: 25%; position: relative;">
         <img src="/images/pdf_lifestyle.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
@@ -403,101 +374,158 @@ async function generatePDFAttachment() {
 
       <div style="padding: 20mm 25mm;">
         <div style="position: relative; border-left: 2px solid #8c9b8a; padding-left: 30px; margin-left: 10px;">
-          <div style="margin-bottom: 30px;">
+          <div style="margin-bottom: 25px;">
             <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
             <strong style="color: #344a3e; font-size: 15px; text-transform: uppercase;">🌅 Amanecer Vital</strong>
-            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine.morning}</p>
+            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine?.morning}</p>
           </div>
-          <div style="margin-bottom: 30px;">
-            <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
-            <strong style="color: #344a3e; font-size: 15px; text-transform: uppercase;">🍛 Nutrición Meridiana</strong>
-            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine.noon || 'Mantén un almuerzo rico en fibras y proteínas magras.'}</p>
-          </div>
-          <div style="margin-bottom: 30px;">
+          <div style="margin-bottom: 25px;">
             <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
             <strong style="color: #344a3e; font-size: 15px; text-transform: uppercase;">🌆 Energía de Tarde</strong>
-            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine.afternoon}</p>
+            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine?.afternoon}</p>
           </div>
           <div style="margin-bottom: 0;">
             <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
             <strong style="color: #344a3e; font-size: 15px; text-transform: uppercase;">🌙 Regeneración Nocturna</strong>
-            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine.night}</p>
+            <p style="font-size: 13px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine?.night}</p>
           </div>
         </div>
 
-        <div style="margin-top: 40px; padding: 25px; background: #f0f7f2; border-radius: 15px; border-left: 5px solid #344a3e;">
+        <div style="margin-top: 35px; padding: 25px; background: #f0f7f2; border-radius: 15px; border-left: 5px solid #344a3e;">
           <h4 style="margin: 0 0 10px; color: #344a3e; font-size: 16px;">💡 Recomendaciones de Estilo de Vida</h4>
           <p style="font-size: 13px; line-height: 1.6; color: #444; margin: 0;">${ext.lifestyleRecommendations || 'Prioriza el descanso de 7-8 horas y una hidratación constante durante el día.'}</p>
         </div>
       </div>
     </div>`,
 
-    // Page 5: NUTRACEUTICAL KIT
-    `<div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #f8f9f8; position: relative;">
-      <div style="margin-bottom: 35px; border-bottom: 2px solid #344a3e; padding-bottom: 20px;">
-        <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 03</h3>
-        <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 28px;">Tu Kit Nutracéutico Sugerido</h2>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 20px;">
-        ${(ext.productsExtended || data.products).map((p, idx) => `
-          <div style="background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: #344a3e;"></div>
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-              <strong style="color: #344a3e; font-size: 22px;">${p.name}</strong>
-              <span style="font-size: 10px; color: #8c9b8a; font-weight: bold; text-transform: uppercase;">Aliado Principal</span>
-            </div>
-            <p style="font-size: 13px; color: #555; margin: 0 0 15px; line-height: 1.6;">${p.fullDescription || p.benefit}</p>
-            <div style="background: #f0f7f2; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
-               <span style="font-size: 18px;">🔔</span>
-               <div>
-                 <strong style="font-size: 11px; color: #344a3e;">PROTOCOLO DE USO</strong>
-                 <p style="font-size: 12px; color: #444; margin: 0;">${p.howToUse || 'Consultar guía de empaque.'}</p>
-               </div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-
-      <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; text-align: center;">
-        <div style="width: 60px; height: 3px; background: #344a3e; margin: 0 auto 20px;"></div>
-        <p style="font-size: 11px; color: #8c9b8a; line-height: 1.5; margin-bottom: 15px;">
-          Este reporte clínico digital optimiza funciones biológicas a través de nutrición avanzada.
-        </p>
-        <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
-          <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">FU XION</span>
-          <span style="width: 1px; height: 20px; background: #ddd;"></span>
-          <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">ADVANCED HEALTH</span>
+    // Page 5: NUTRITION & EXERCISE
+    `<div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #fff; position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
+        <div>
+          <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 03</h3>
+          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 28px;">Bio-Hacking: Nutrición y Ejercicio</h2>
         </div>
+      </div>
+
+      <!-- Nutrition Section -->
+      <div style="margin-bottom: 35px;">
+        <h4 style="color: #344a3e; border-bottom: 2px solid #c9e2d1; padding-bottom: 10px; font-size: 18px; margin-bottom: 20px;">🥗 Hacks Nutricionales</h4>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          ${ext.nutritionTips ? ext.nutritionTips.map(tip => `
+            <div style="background: #fcfdfc; padding: 20px; border-radius: 12px; border-left: 4px solid #d4af37; box-shadow: 0 3px 10px rgba(0,0,0,0.02);">
+              <strong style="color: #344a3e; font-size: 15px; display: block; margin-bottom: 5px;">${tip.title}</strong>
+              <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.6;">${tip.description}</p>
+            </div>
+          `).join('') : '<p style="font-size: 13px; color: #555;">Sigue las recomendaciones nutricionales de tu asesor.</p>'}
+        </div>
+      </div>
+
+      <!-- Exercise Section -->
+      <div style="margin-bottom: 30px;">
+        <h4 style="color: #344a3e; border-bottom: 2px solid #c9e2d1; padding-bottom: 10px; font-size: 18px; margin-bottom: 20px;">⚡ Movimiento Estratégico</h4>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          ${ext.exerciseTips ? ext.exerciseTips.map(tip => `
+            <div style="background: #f0f7f2; padding: 20px; border-radius: 12px; border-left: 4px solid #8c9b8a; box-shadow: 0 3px 10px rgba(0,0,0,0.02);">
+              <strong style="color: #344a3e; font-size: 15px; display: block; margin-bottom: 5px;">${tip.title}</strong>
+              <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.6;">${tip.description}</p>
+            </div>
+          `).join('') : '<p style="font-size: 13px; color: #555;">Inicia con 30 minutos de actividad cardiovascular diaria.</p>'}
+        </div>
+      </div>
+
+      <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 10px; color: #999;">
+        <span>FUXION SCIENCE LABS</span>
+        <span>Optimizando tu Rendimiento</span>
       </div>
     </div>`
   ];
 
-  document.body.appendChild(pdfContainer);
+  // Dynamically add Product Pages (Section 04)
+  productChunks.forEach((chunk, pageIdx) => {
+    finalPages.push(`
+    <div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #f8f9f8; position: relative;">
+        <div style="margin-bottom: 35px; border-bottom: 2px solid #344a3e; padding-bottom: 20px;">
+          <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 04 ${productChunks.length > 1 ? `(Pág. ${pageIdx + 1})` : ''}</h3>
+          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 28px;">Tu Kit Nutracéutico Sugerido</h2>
+        </div>
 
-  for (let i = 0; i < sections.length; i++) {
-    pdfContainer.innerHTML = sections[i];
-    // We add a delay to ensure heavy images load/render
-    await new Promise(r => setTimeout(r, 200));
-    const canvas = await html2canvas(pdfContainer, {
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          ${chunk.map((p) => `
+            <div style="background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+              <div style="position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: #344a3e;"></div>
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <strong style="color: #344a3e; font-size: 22px;">${p.name}</strong>
+                <span style="font-size: 10px; color: #8c9b8a; font-weight: bold; text-transform: uppercase;">Aliado Principal</span>
+              </div>
+              <p style="font-size: 13px; color: #555; margin: 0 0 15px; line-height: 1.6;">${p.fullDescription || p.benefit}</p>
+              <div style="background: #f0f7f2; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                 <span style="font-size: 18px;">🔔</span>
+                 <div>
+                   <strong style="font-size: 11px; color: #344a3e;">PROTOCOLO DE USO</strong>
+                   <p style="font-size: 12px; color: #444; margin: 0;">${p.howToUse || 'Consultar guía de empaque.'}</p>
+                 </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        ${pageIdx === productChunks.length - 1 ? `
+          <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; text-align: center;">
+            <div style="width: 60px; height: 3px; background: #344a3e; margin: 0 auto 20px;"></div>
+            <p style="font-size: 11px; color: #8c9b8a; line-height: 1.5; margin-bottom: 15px;">
+              Este reporte clínico digital optimiza funciones biológicas a través de nutrición avanzada.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+              <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">FU XION</span>
+              <span style="width: 1px; height: 20px; background: #ddd;"></span>
+              <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">ADVANCED HEALTH</span>
+            </div>
+          </div>
+        ` : `
+          <div style="position: absolute; bottom: 25mm; right: 25mm; font-size: 12px; color: #8c9b8a;">
+            Continúa en la siguiente página →
+          </div>
+        `}
+      </div >
+    `);
+  });
+
+  const pdfRenderContainer = document.createElement('div');
+  pdfRenderContainer.style.position = 'fixed';
+  pdfRenderContainer.style.left = '-9999px';
+  pdfRenderContainer.style.top = '0';
+  pdfRenderContainer.style.width = '210mm';
+  pdfRenderContainer.innerHTML = finalPages.join('');
+  document.body.appendChild(pdfRenderContainer);
+
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const renderedPages = pdfRenderContainer.querySelectorAll('.pdf-page');
+
+  for (let i = 0; i < renderedPages.length; i++) {
+    const canvas = await html2canvas(renderedPages[i], {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#ffffff'
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: 794,
     });
-    const imgData = canvas.toDataURL('image/jpeg', 0.90);
 
-    if (i > 0) doc.addPage();
-    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+    const imgData = canvas.toDataURL('image/png');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    if (i > 0) pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
   }
 
-  document.body.removeChild(pdfContainer);
-  return doc.output('blob');
+  const pdfBlob = pdf.output('blob');
+  document.body.removeChild(pdfRenderContainer);
+  return pdfBlob;
 }
 
 async function downloadPDF() {
   const btns = document.querySelectorAll('.download-pdf-btn');
   const data = currentReportData;
-
   if (!data) {
     alert('No hay datos suficientes para generar el PDF. Por favor, realiza la evaluación de nuevo.');
     return;
@@ -538,6 +566,7 @@ async function downloadPDF() {
   }
 }
 
+
 async function saveLead(e) {
   e.preventDefault();
   const submitBtn = document.getElementById('submit-lead');
@@ -561,12 +590,12 @@ async function saveLead(e) {
   };
 
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/fuxion_leads`, {
+    const response = await fetch(`${supabaseUrl} /rest/v1 / fuxion_leads`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Authorization': `Bearer ${supabaseAnonKey} `,
         'Prefer': 'return=minimal'
       },
       body: JSON.stringify(leadData)
@@ -574,7 +603,7 @@ async function saveLead(e) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      throw new Error(`HTTP ${response.status}: ${errorText} `);
     }
 
     // Generate WhatsApp Summary Message
@@ -583,14 +612,16 @@ async function saveLead(e) {
 
     const waMsg = `¡Hola Camila! 👋 Soy ${name}. Acabo de completar mi evaluación de ${currentGoal} en la web.
     
-📌 *Resumen de mi Reporte:*
-- ${ageInfo}
-- Objetivo: ${currentGoal}
-- Análisis: ${metabolicRes}
+📌 * Resumen de mi Reporte:*
+    - ${ageInfo}
+  - Objetivo: ${currentGoal}
+  - Análisis: ${metabolicRes}
 
-Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi correo es ${email}.`;
+Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría.Mi correo es ${email}.`;
 
-    finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+    if (finalWaLink) {
+      finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+    }
 
     // Show Success UI
     leadFormContent.style.display = 'none';
@@ -695,6 +726,11 @@ async function uploadPDFToStorage(pdfBlob, fileName) {
 }
 
 // --- Event Listeners ---
+
+// Handle all PDF download buttons (including the one in success UI)
+document.querySelectorAll('.pdf-download-btn').forEach(btn => {
+  btn.addEventListener('click', downloadPDF);
+});
 
 leadForm.addEventListener('submit', saveLead);
 
