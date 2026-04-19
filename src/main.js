@@ -579,26 +579,49 @@ async function saveLead(e) {
   e.preventDefault();
   const submitBtn = document.getElementById('submit-lead');
   const leadNameInput = document.getElementById('lead-name');
+  const leadEmail = document.getElementById('lead-email');
+  const leadPhone = document.getElementById('lead-phone');
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Enviando...';
+  submitBtn.textContent = 'Procesando...';
 
   const name = leadNameInput ? leadNameInput.value : userName;
-  userName = name; // Actualizar globalmente para el PDF
+  userName = name;
   const email = leadEmail.value;
   const phone = leadPhone.value;
 
-  const leadData = {
-    name: name,
-    email: email,
-    phone: phone,
-    biological_age: parseInt(currentReportData?.biologicalAge?.age) || null,
-    goal: currentGoal,
-    report_data: currentReportData,
-    status: 'new'
-  };
-
   try {
+    // --- 1. Generar y Subir PDF Primero ---
+    let pdfUrl = null;
+    try {
+      console.log('--- Iniciando Procesamiento de PDF ---');
+      submitBtn.textContent = 'Personalizando tu Plan... ⏳';
+      const pdfBlob = await generatePDFAttachment();
+      const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+
+      submitBtn.textContent = 'Guardando en la Nube... ☁️';
+      pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
+    } catch (pdfErr) {
+      console.error('Error crítico procesando PDF:', pdfErr);
+    }
+
+    // Guardar para el botón de descarga instantánea en la UI de éxito
+    window.lastGeneratedPdfUrl = pdfUrl;
+
+    // --- 2. Preparar Datos para Supabase (incluyendo pdf_url) ---
+    const leadData = {
+      name: name,
+      email: email,
+      phone: phone,
+      biological_age: parseInt(currentReportData?.biologicalAge?.age) || null,
+      goal: currentGoal,
+      report_data: currentReportData,
+      pdf_url: pdfUrl,
+      status: 'new'
+    };
+
+    // --- 3. Guardar en Supabase ---
+    submitBtn.textContent = 'Registrando Diagnóstico... 📑';
     const response = await fetch(`${supabaseUrl}/rest/v1/fuxion_leads`, {
       method: 'POST',
       headers: {
@@ -615,24 +638,11 @@ async function saveLead(e) {
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
-    // --- Generate and Upload PDF for Email Link ---
-    let pdfUrl = null;
-    try {
-      console.log('--- Iniciando Procesamiento de PDF ---');
-      submitBtn.textContent = 'Personalizando tu Plan... ⏳';
-      const pdfBlob = await generatePDFAttachment();
-      const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+    // --- 4. Enviar Notificaciones ---
+    submitBtn.textContent = 'Enviando Reporte por Email... 📧';
+    await sendLeadEmails(leadData, pdfUrl);
 
-      submitBtn.textContent = 'Guardando en la Nube... ☁️';
-      pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
-    } catch (pdfErr) {
-      console.error('Error crítico procesando PDF:', pdfErr);
-    }
-
-    // Store for instant download button
-    window.lastGeneratedPdfUrl = pdfUrl;
-
-    // --- High-Conversion WhatsApp Message ---
+    // Actualizar link de WhatsApp con mensaje agresivo basado en reporte
     const ageInfo = currentReportData?.biologicalAge ? `Edad Biol: ${currentReportData.biologicalAge.age} (${currentReportData.biologicalAge.badge})` : '';
     const metabolicRes = currentReportData?.metabolicAnalysis ? currentReportData.metabolicAnalysis.substring(0, 150) + "..." : '';
 
@@ -649,11 +659,7 @@ Camila, por lo que vi en mi diagnóstico, *necesito empezar mi transformación Y
       finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
     }
 
-    // Trigger Automated Emailing
-    submitBtn.textContent = 'Enviando Email... 📧';
-    await sendLeadEmails(leadData, pdfUrl);
-
-    // Show Success UI
+    // Mostrar Pantalla de Éxito
     leadFormContent.style.display = 'none';
     leadSuccess.style.display = 'block';
 
@@ -661,7 +667,6 @@ Camila, por lo que vi en mi diagnóstico, *necesito empezar mi transformación Y
     console.error('Error saving lead:', error);
     alert('Ocurrió un error. Por favor intenta de nuevo o contacta por WhatsApp.');
   } finally {
-    const submitBtn = document.getElementById('submit-lead');
     submitBtn.disabled = false;
     submitBtn.textContent = 'Solicitar Reporte Personalizado';
   }
