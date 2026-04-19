@@ -95,7 +95,8 @@ async function openChat(goalTitle) {
     1. Saluda como Camila y menciona su interés en "${goalTitle}". Di que le harás unas preguntas rápidas para conocerlo.
     2. Haz SIEMPRE SOLO UNA PREGUNTA (o dos muy cortas y relacionadas) a la vez.
     3. A través de la conversación, debes indagar sobre estos pilares:
-       - Edad/Peso/Sexo.
+       - Edad/Peso/Sexo. (IMPORTANTE: Solo atender a personas de 15 años o más. Si es menor, dile amablemente que por ahora solo puedes asesorar a mayores de 15 años).
+       - Antecedentes de salud: Pregunta si tiene alguna enfermedad de base o diagnóstico como hipertensión, cardiopatías, colesterol, diabetes, embarazo o lactancia.
        - Descanso (Horas y calidad).
        - Alimentación e Hidratación.
        - Actividad física / Sedentarismo.
@@ -171,6 +172,11 @@ async function generateReport() {
       Genera el REPORTE DE BIENESTAR PREMIUM (JSON) personalizado para ${userName}.
       IMPORTANTE: Los productos FuXion recomendados DEBEN incluirse dentro de los pasos de la "routine".
       SOLO RESPONDE CON EL JSON.
+
+      REGLAS DURAS DE RECOMENDACIÓN (SÍGUELAS ESTRICTAMENTE):
+      - Si el usuario tiene HIPERTENSIÓN o CARDIOPATÍA: NO RECOMENDAR "Vita Xtra T+" ni "Termo T3".
+      - Si la usuaria está EMBARAZADA o en periodo de LACTANCIA: NO RECOMENDAR "Café" (ninguno), ni "Vita Xtra T+", ni "Termo T3".
+      - Solo recomendar productos adecuados según su perfil de salud reportado.
 
       {
         "biologicalAge": { "age": "X años", "badge": "Nivel Óptimo/Alerta", "explanation": "..." },
