@@ -97,7 +97,7 @@ async function openChat(goalTitle) {
     1. Saluda como Camila y menciona su interés en "${goalTitle}". Di que le harás unas preguntas rápidas para conocerlo.
     2. Haz SIEMPRE SOLO UNA PREGUNTA (o dos muy cortas y relacionadas) a la vez.
     3. A través de la conversación, debes indagar sobre estos pilares:
-       - Edad/Peso/Sexo. (IMPORTANTE: Solo atender a personas de 15 años o más. Si es menor, dile amablemente que por ahora solo puedes asesorar a mayores de 15 años).
+       - Edad/Peso/Sexo y ESTATURA. (IMPORTANTE: Solo atender a personas de 15 años o más. Si es menor, dile amablemente que por ahora solo puedes asesorar a mayores de 15 años).
        - Antecedentes de salud: Pregunta si tiene alguna enfermedad de base o diagnóstico como hipertensión, cardiopatías, colesterol, diabetes, embarazo o lactancia.
        - Descanso (Horas y calidad).
        - Alimentación e Hidratación.
@@ -172,6 +172,7 @@ async function generateReport() {
   try {
     const jsonPrompt = `
       Genera el REPORTE DE BIENESTAR PREMIUM (JSON) personalizado para ${userName}.
+      Considéra su relación PESO/ESTATURA para dar un diagnóstico preciso.
       IMPORTANTE: Los productos FuXion recomendados DEBEN incluirse dentro de los pasos de la "routine".
       SOLO RESPONDE CON EL JSON.
 
