@@ -552,22 +552,27 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
     let pdfUrl = null;
     try {
       console.log('--- Iniciando Procesamiento de PDF ---');
+      submitBtn.textContent = 'Enviando a Storage... ☁️';
       const pdfBlob = await generatePDFAttachment();
       const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
-      console.log('Subiendo a Supabase Storage bucket: reports-fuxion, archivo:', fileName);
       pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
-      console.log('URL de PDF obtenida:', pdfUrl);
     } catch (pdfErr) {
       console.error('Error crítico procesando PDF:', pdfErr);
     }
 
     // Trigger Automated Emailing
-    console.log('Enviando correos vía EmailJS...');
-    sendLeadEmails(leadData, pdfUrl);
+    submitBtn.textContent = 'Enviando Email... 📧';
+    await sendLeadEmails(leadData, pdfUrl);
+
+    // Show Success UI
+    leadFormContent.style.display = 'none';
+    leadSuccess.style.display = 'block';
 
   } catch (error) {
     console.error('Error saving lead:', error);
-    alert('Hubo un error al guardar tus datos. Por favor, intenta de nuevo o contacta directamente por WhatsApp.');
+    alert('Ocurrió un error. Por favor intenta de nuevo o contacta por WhatsApp.');
+  } finally {
+    const submitBtn = document.getElementById('submit-lead');
     submitBtn.disabled = false;
     submitBtn.textContent = 'Solicitar Reporte Personalizado';
   }
