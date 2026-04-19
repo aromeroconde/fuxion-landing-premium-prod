@@ -548,23 +548,19 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
     leadFormContent.style.display = 'none';
     leadSuccess.style.display = 'block';
 
-    // Generate PDF for Email Attachment
-    let pdfBase64 = null;
+    // Generate and Upload PDF for Email Link
+    let pdfUrl = null;
     try {
-      console.log('Generando PDF adjunto...');
+      console.log('Generando PDF y subiendo a storage...');
       const pdfBlob = await generatePDFAttachment();
-      // EmailJS handles Data URIs directly
-      pdfBase64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(pdfBlob);
-      });
+      const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+      pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
     } catch (pdfErr) {
-      console.error('No se pudo generar el PDF para adjuntar:', pdfErr);
+      console.error('No se pudo procesar el PDF para el link:', pdfErr);
     }
 
     // Trigger Automated Emailing
-    sendLeadEmails(leadData, pdfBase64);
+    sendLeadEmails(leadData, pdfUrl);
 
   } catch (error) {
     console.error('Error saving lead:', error);
@@ -574,7 +570,7 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
   }
 }
 
-async function sendLeadEmails(leadData, pdfBase64) {
+async function sendLeadEmails(leadData, pdfUrl) {
   if (!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
     console.warn('EmailJS: No se han configurado los IDs reales en el archivo .env. Los correos no se enviarán.');
     return;
@@ -589,7 +585,8 @@ async function sendLeadEmails(leadData, pdfBase64) {
       lead_phone: leadData.phone,
       lead_goal: leadData.goal,
       biological_age: leadData.biological_age,
-      metabolic_analysis: leadData.report_data?.metabolicAnalysis?.substring(0, 500)
+      metabolic_analysis: leadData.report_data?.metabolicAnalysis?.substring(0, 500),
+      pdf_url: pdfUrl // Link to the PDF in Supabase Storage
     });
 
     // 2. Reporte al Cliente
@@ -604,12 +601,37 @@ async function sendLeadEmails(leadData, pdfBase64) {
       routine_afternoon: leadData.report_data?.routine?.afternoon,
       routine_night: leadData.report_data?.routine?.night,
       product_suggestions: leadData.report_data?.products?.map(p => p.name).join(', '),
-      pdf_attachment: pdfBase64 // This matches the "Variable Attachment" name in EmailJS
+      pdf_url: pdfUrl // Link to the PDF in Supabase Storage
     });
 
-    console.log('Emails sent successfully via EmailJS with PDF attachment');
+    console.log('Emails sent successfully via EmailJS with PDF link');
   } catch (error) {
     console.error('EmailJS Error:', error);
+  }
+}
+
+/**
+ * Uploads a PDF to Supabase Storage and returns the public URL.
+ */
+async function uploadPDFToStorage(pdfBlob, fileName) {
+  try {
+    const { data, error } = await supabase.storage
+      .from('reports')
+      .upload(`public/${fileName}`, pdfBlob, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('reports')
+      .getPublicUrl(`public/${fileName}`);
+
+    return publicUrl;
+  } catch (err) {
+    console.error('Supabase Storage Error:', err);
+    return null;
   }
 }
 
