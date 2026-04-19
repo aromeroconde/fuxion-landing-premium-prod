@@ -157,6 +157,7 @@ async function handleUserInput() {
 
       // Intentar extraer el nombre del historial (heurística simple o pedirlo específicamente)
       extractUserName();
+      extractUserAge();
       generateReport();
     } else {
       addMessage(text, true);
@@ -164,6 +165,17 @@ async function handleUserInput() {
   } catch (error) {
     console.error("Gemini Response Error:", error);
     addMessage('Hubo un problema de conexión. Por favor, intenta de nuevo.', true);
+  }
+}
+
+async function extractUserAge() {
+  try {
+    const extractionPrompt = "Basado en la conversación anterior, ¿qué edad tiene el usuario? Responde SOLO con el número (ej: 35). Si no lo sabes, responde '??'.";
+    const result = await chatSession.sendMessage(extractionPrompt);
+    const ageText = result.response.text().trim().match(/\d+/);
+    window.userAge = ageText ? ageText[0] : '??';
+  } catch (e) {
+    window.userAge = '??';
   }
 }
 
@@ -335,8 +347,8 @@ async function generatePDFAttachment() {
 
     // Page 3: THE PHILOSOPHY
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #f8f9f8; position: relative; display: flex; flex-direction: column;">
-      <div style="height: 35%; position: relative;">
-        <img src="/images/pdf_science.png" style="width: 100%; height: 100%; object-fit: cover;">
+      <div style="height: 35%; position: relative; overflow: hidden;">
+        <img src="/images/Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
         <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(0,0,0,0.4), transparent);"></div>
       </div>
       <div style="padding: 25mm; flex: 1;">
@@ -347,10 +359,8 @@ async function generatePDFAttachment() {
           con los últimos avances científicos en biotecnología aplicada a la nutrición humana.
         </p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
-          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <div style="font-size: 24px; margin-bottom: 10px;">🛡️</div>
-            <strong style="color: #344a3e;">Limpieza Vital</strong>
-            <p style="font-size: 12px; color: #666; margin-top: 5px;">Eliminamos toxinas para que tus células respiren.</p>
+          <div style="background: white; border-radius: 12px; height: 180px; overflow: hidden;">
+            <img src="/images/Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <div style="font-size: 24px; margin-bottom: 10px;">⚡</div>
@@ -363,8 +373,8 @@ async function generatePDFAttachment() {
 
     // Page 4: ROADMAP
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative; display: flex; flex-direction: column;">
-      <div style="max-height: 120px; overflow: hidden; position: relative;">
-        <img src="/images/pdf_lifestyle.png" style="width: 100%; height: 120px; object-fit: cover; opacity: 0.8;">
+      <div style="height: 30%; position: relative; overflow: hidden;">
+        <img src="/images/cocina.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.4), transparent);"></div>
         <div style="position: absolute; bottom: 15px; left: 25mm; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
           <h3 style="margin: 0; font-size: 12px; letter-spacing: 2px;">SECCIÓN 02</h3>
@@ -646,19 +656,10 @@ async function saveLead(e) {
     const productList = currentReportData?.products?.map(p => `• *${p.name}*`).join('\n') || '• Kit Personalizado';
     const waGoal = currentGoal || 'Mejorar mi Salud';
     const waBadge = currentReportData?.biologicalAge?.badge || 'Alerta Metabólica';
-    const realAgeNum = age; // 'age' is defined at the start of submitHandler from window.userAge
+    const realAgeNum = window.userAge || '??';
     const bioAgeNum = currentReportData?.biologicalAge?.age || '??';
 
-    const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud en la web y me urge empezar.
-
-📌 *RESUMEN DE MI DIAGNÓSTICO:*
-• *Meta:* ${waGoal}
-• *Estado:* ${waBadge} (Edad Real: ${realAgeNum} - Biol: ${bioAgeNum})
-
-📦 *MI KIT RECOMENDADO:*
-${productList}
-
-Camila, necesito coordinar mi asesoría para empezar con estos productos y agendar mi cita. Mi correo es ${email}.`;
+    const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud en la web y me urge empezar.\n\n📌 *RESUMEN DE MI DIAGNÓSTICO:*\n• *Meta:* ${waGoal}\n• *Estado:* ${waBadge} (Edad Real: ${realAgeNum} - Biol: ${bioAgeNum})\n\n📦 *MI KIT RECOMENDADO:*\n${productList}\n\nCamila, necesito que me asesores para empezar con estos productos. Mi correo es ${email}.`;
 
     if (finalWaLink) {
       finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
@@ -670,7 +671,7 @@ Camila, necesito coordinar mi asesoría para empezar con estos productos y agend
 
   } catch (error) {
     console.error('Error saving lead:', error);
-    alert('Ocurrió un error. Por favor intenta de nuevo o contacta por WhatsApp.');
+    alert(`Lo sentimos, ocurrió un error al guardar tu reporte: ${error.message}. Por favor, toma una captura de pantalla e intenta de nuevo.`);
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Solicitar Reporte Personalizado';
