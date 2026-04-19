@@ -362,17 +362,17 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 4: ROADMAP
-    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative;">
-      <div style="height: 25%; position: relative;">
-        <img src="/images/pdf_lifestyle.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
+    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative; display: flex; flex-direction: column;">
+      <div style="max-height: 200px; overflow: hidden; position: relative;">
+        <img src="/images/pdf_lifestyle.png" style="width: 100%; height: 200px; object-fit: cover; opacity: 0.7;">
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.8), transparent);"></div>
-        <div style="position: absolute; bottom: 30px; left: 25mm; color: white;">
+        <div style="position: absolute; bottom: 20px; left: 25mm; color: white;">
           <h3 style="margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 02</h3>
           <h2 style="margin: 5px 0 0; font-size: 32px;">Tu Hoja de Ruta Diaria</h2>
         </div>
       </div>
 
-      <div style="padding: 20mm 25mm;">
+      <div style="padding: 15mm 25mm; flex: 1;">
         <div style="position: relative; border-left: 2px solid #8c9b8a; padding-left: 30px; margin-left: 10px;">
           <div style="margin-bottom: 25px;">
             <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
@@ -642,18 +642,21 @@ async function saveLead(e) {
     submitBtn.textContent = 'Enviando Reporte por Email... 📧';
     await sendLeadEmails(leadData, pdfUrl);
 
-    // Actualizar link de WhatsApp con mensaje agresivo basado en reporte
-    const ageInfo = currentReportData?.biologicalAge ? `Edad Biol: ${currentReportData.biologicalAge.age} (${currentReportData.biologicalAge.badge})` : '';
-    const metabolicRes = currentReportData?.metabolicAnalysis ? currentReportData.metabolicAnalysis.substring(0, 150) + "..." : '';
+    // Actualizar link de WhatsApp con mensaje de alta conversión enfocado en Hallazgos + Productos
+    const productList = currentReportData?.products?.map(p => `• *${p.name}*`).join('\n') || '• Kit Personalizado';
+    const waGoal = currentGoal || 'Mejorar mi Salud';
+    const waBadge = currentReportData?.biologicalAge?.badge || 'Alerta Metabólica';
 
-    const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud y estoy impactado con los resultados.
+    const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud en la web y me urge empezar.
 
-📌 *VISTA PREVIA DE MI REPORTE:*
-• *Mi Edad Biológica:* ${currentReportData?.biologicalAge?.age || 'En análisis'} 
-• *Estado Detectado:* ${currentReportData?.biologicalAge?.badge || 'Alerta Metabólica'}
-• *Factor Crítico:* ${metabolicRes}
+📌 *RESUMEN DE MI DIAGNÓSTICO:*
+• *Meta:* ${waGoal}
+• *Estado:* ${waBadge} (${currentReportData?.biologicalAge?.age || '??'} años)
 
-Camila, por lo que vi en mi diagnóstico, *necesito empezar mi transformación YA*. ¿Cómo podemos coordinar mi asesoría y el seguimiento de mi plan nutricional? Mi correo registrado es ${email}.`;
+📦 *MI KIT RECOMENDADO:*
+${productList}
+
+Camila, necesito coordinar mi asesoría para empezar con estos productos y recibir mi plan detallado. Mi correo es ${email}.`;
 
     if (finalWaLink) {
       finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
