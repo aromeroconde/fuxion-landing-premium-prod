@@ -182,17 +182,28 @@ async function generateReport() {
 
       {
         "biologicalAge": { "age": "X años", "badge": "Nivel Óptimo/Alerta", "explanation": "..." },
-        "metabolicAnalysis": "Resumen para ${userName}...",
-        "bioExplanation": "Explicación técnica...",
+        "metabolicAnalysis": "Resumen corto para la web...",
+        "bioExplanation": "Explicación técnica corta para la web...",
         "routine": {
-          "morning": "Acción con producto FuXion...",
-          "afternoon": "Acción con producto FuXion...",
-          "night": "Acción con producto FuXion..."
+          "morning": "Acción mañana...",
+          "afternoon": "Acción tarde...",
+          "night": "Acción noche..."
         },
         "products": [
-          { "name": "Producto 1", "benefit": "Por qué lo necesita...", "cta": "Comprar ahora" },
-          { "name": "Producto 2", "benefit": "Por qué lo necesita...", "cta": "Comprar ahora" }
-        ]
+          { "name": "Producto 1", "benefit": "Beneficio corto...", "cta": "Comprar ahora" }
+        ],
+        "pdfExtendedData": {
+          "detailedAnalysis": "Un análisis profundo y profesional de la condición del usuario (3-4 párrafos)...",
+          "biologicalDeepDive": "Explicación detallada de los procesos bioquímicos afectados...",
+          "lifestyleRecommendations": "Consejos adicionales sobre sueño, estrés y actividad física...",
+          "productsExtended": [
+            { 
+              "name": "Producto 1", 
+              "fullDescription": "Descripción detallada del producto, sus componentes clave y por qué es vital para este caso específico...",
+              "howToUse": "Instrucciones precisas de consumo..."
+            }
+          ]
+        }
       }
     `;
 
@@ -288,11 +299,11 @@ async function downloadPDF() {
       <div class="pdf-title">Plan de Transformación Personalizado</div>
       <div class="pdf-badge">Edad Biológica: ${data.biologicalAge.age} • ${data.biologicalAge.badge}</div>
       
-      <div class="pdf-section-title">Análisis Metabólico</div>
-      <div class="pdf-content">${data.metabolicAnalysis}</div>
+      <div class="pdf-section-title">Análisis Metabólico Profundo</div>
+      <div class="pdf-content">${data.pdfExtendedData?.detailedAnalysis || data.metabolicAnalysis}</div>
       
-      <div class="pdf-section-title">Explicación Biológica</div>
-      <div class="pdf-content">${data.bioExplanation}</div>
+      <div class="pdf-section-title">Explicación Bioquímica Detallada</div>
+      <div class="pdf-content">${data.pdfExtendedData?.biologicalDeepDive || data.bioExplanation}</div>
       
       <div class="pdf-footer">
         <span>Preparado por Camila - Especialista en Nutrición IA</span>
@@ -323,6 +334,9 @@ async function downloadPDF() {
         <div class="pdf-content">${data.routine.night}</div>
       </div>
 
+      <div class="pdf-section-title">Recomendaciones de Estilo de Vida</div>
+      <div class="pdf-content">${data.pdfExtendedData?.lifestyleRecommendations || 'Consulta con tu asesor para más detalles sobre hábitos saludables.'}</div>
+
       <div class="pdf-footer">
         <span>© 2026 FuXion & Advanced Health</span>
         <span>Página 2</span>
@@ -339,10 +353,11 @@ async function downloadPDF() {
       </div>
       <div class="pdf-section-title">Sugerencias Nutracéuticas</div>
       
-      ${data.products.map(p => `
+      ${(data.pdfExtendedData?.productsExtended || data.products).map(p => `
         <div class="pdf-product-card">
           <strong style="color: #344a3e; font-size: 16px;">${p.name}</strong>
-          <div class="pdf-content" style="margin-top: 8px;">${p.benefit}</div>
+          <div class="pdf-content" style="margin-top: 8px;">${p.fullDescription || p.benefit}</div>
+          ${p.howToUse ? `<div class="pdf-content" style="margin-top: 5px; font-weight: 600;">Modo de uso: ${p.howToUse}</div>` : ''}
         </div>
       `).join('')}
 
