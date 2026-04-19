@@ -590,12 +590,12 @@ async function saveLead(e) {
   };
 
   try {
-    const response = await fetch(`${supabaseUrl} /rest/v1 / fuxion_leads`, {
+    const response = await fetch(`${supabaseUrl}/rest/v1/fuxion_leads`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey} `,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
         'Prefer': 'return=minimal'
       },
       body: JSON.stringify(leadData)
