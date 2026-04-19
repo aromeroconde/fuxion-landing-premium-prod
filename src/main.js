@@ -531,6 +531,14 @@ async function downloadPDF() {
     return;
   }
 
+  // Si ya tenemos una URL de Supabase generada en saveLead, la usamos directamente
+  if (window.lastGeneratedPdfUrl) {
+    console.log('Descargando PDF desde URL existente:', window.lastGeneratedPdfUrl);
+    window.open(window.lastGeneratedPdfUrl, '_blank');
+    return;
+  }
+
+  // Fallback en caso de que saveLead haya fallado al subir pero queramos intentar generar localmente
   btns.forEach(btn => {
     btn.disabled = true;
     btn.dataset.originalText = btn.innerHTML;
@@ -607,37 +615,38 @@ async function saveLead(e) {
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
-    // Generate WhatsApp Summary Message
-    const ageInfo = currentReportData?.biologicalAge ? `Edad Biol: ${currentReportData.biologicalAge.age} (${currentReportData.biologicalAge.badge})` : '';
-    const metabolicRes = currentReportData?.metabolicAnalysis ? currentReportData.metabolicAnalysis.substring(0, 150) + "..." : '';
-
-    const waMsg = `¡Hola Camila! 👋 Soy ${name}. Acabo de completar mi evaluación de ${currentGoal} en la web.
-    
-📌 * Resumen de mi Reporte:*
-    - ${ageInfo}
-  - Objetivo: ${currentGoal}
-  - Análisis: ${metabolicRes}
-
-Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría.Mi correo es ${email}.`;
-
-    if (finalWaLink) {
-      finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
-    }
-
-    // Show Success UI
-    leadFormContent.style.display = 'none';
-    leadSuccess.style.display = 'block';
-
-    // Generate and Upload PDF for Email Link
+    // --- Generate and Upload PDF for Email Link ---
     let pdfUrl = null;
     try {
       console.log('--- Iniciando Procesamiento de PDF ---');
-      submitBtn.textContent = 'Enviando a Storage... ☁️';
+      submitBtn.textContent = 'Personalizando tu Plan... ⏳';
       const pdfBlob = await generatePDFAttachment();
       const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+
+      submitBtn.textContent = 'Guardando en la Nube... ☁️';
       pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
     } catch (pdfErr) {
       console.error('Error crítico procesando PDF:', pdfErr);
+    }
+
+    // Store for instant download button
+    window.lastGeneratedPdfUrl = pdfUrl;
+
+    // --- High-Conversion WhatsApp Message ---
+    const ageInfo = currentReportData?.biologicalAge ? `Edad Biol: ${currentReportData.biologicalAge.age} (${currentReportData.biologicalAge.badge})` : '';
+    const metabolicRes = currentReportData?.metabolicAnalysis ? currentReportData.metabolicAnalysis.substring(0, 150) + "..." : '';
+
+    const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud y estoy impactado con los resultados.
+
+📌 *VISTA PREVIA DE MI REPORTE:*
+• *Mi Edad Biológica:* ${currentReportData?.biologicalAge?.age || 'En análisis'} 
+• *Estado Detectado:* ${currentReportData?.biologicalAge?.badge || 'Alerta Metabólica'}
+• *Factor Crítico:* ${metabolicRes}
+
+Camila, por lo que vi en mi diagnóstico, *necesito empezar mi transformación YA*. ¿Cómo podemos coordinar mi asesoría y el seguimiento de mi plan nutricional? Mi correo registrado es ${email}.`;
+
+    if (finalWaLink) {
+      finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
     }
 
     // Trigger Automated Emailing
