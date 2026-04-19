@@ -262,9 +262,6 @@ async function generateReport() {
   }
 }
 
-/**
- * Generates a professional multi-page PDF blob for email attachment.
- */
 async function generatePDFAttachment() {
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -282,47 +279,86 @@ async function generatePDFAttachment() {
   pdfContainer.style.fontFamily = "'Segoe UI', Roboto, sans-serif";
 
   const data = currentReportData;
+  const ext = data.pdfExtendedData || {};
+
   const sections = [
     // Page 1: Diagnosis & Analysis
-    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
+    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm; display: flex; flex-direction: column;">
       <div style="text-align: center; margin-bottom: 20px;">
         <h1 style="color: #344a3e; margin: 0; font-size: 28px;">Reporte de Bienestar FuXion</h1>
-        <p style="color: #8c9b8a; font-size: 16px;">Evaluación Nutracéutica Personalizada</p>
+        <p style="color: #8c9b8a; font-size: 16px;">Evaluación Nutracéutica de Alta Precisión</p>
       </div>
       
-      <div style="background-color: #344a3e; color: white; padding: 15px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
-        <h2 style="margin: 0;">Edad Biológica: ${data.biologicalAge.age} años</h2>
-        <p style="margin: 5px 0 0; opacity: 0.9;">${data.biologicalAge.badge}</p>
+      <div style="background-color: #344a3e; color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+        <h2 style="margin: 0; font-size: 22px;">RESULTADO: Edad Biológica ${data.biologicalAge.age}</h2>
+        <p style="margin: 5px 0 0; opacity: 0.9; font-weight: bold;">Estatus: ${data.biologicalAge.badge}</p>
       </div>
 
-      <h3 style="color: #344a3e; border-bottom: 1px solid #8c9b8a; padding-bottom: 10px;">Análisis Metabólico</h3>
-      <p style="line-height: 1.6; color: #444; font-size: 14px;">${data.metabolicAnalysis}</p>
-    </div>`,
+      <div style="margin-bottom: 25px;">
+        <h3 style="color: #344a3e; border-bottom: 2px solid #8c9b8a; padding-bottom: 5px; margin-top: 0;">🧬 Análisis Situacional</h3>
+        <p style="line-height: 1.6; color: #333; font-size: 14px; text-align: justify;">${ext.detailedAnalysis || data.metabolicAnalysis}</p>
+      </div>
 
-    // Page 2: Routine
-    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
-      <h3 style="color: #344a3e; border-bottom: 1px solid #8c9b8a; padding-bottom: 10px;">Tu Hoja de Ruta Diaria</h3>
-      <div style="margin-top: 20px;">
-        <div style="margin-bottom: 15px;"><strong>Morning:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.morning}</span></div>
-        <div style="margin-bottom: 15px;"><strong>Noon:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.noon}</span></div>
-        <div style="margin-bottom: 15px;"><strong>Afternoon:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.afternoon}</span></div>
-        <div style="margin-bottom: 15px;"><strong>Night:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.night}</span></div>
+      <div style="margin-bottom: 25px; padding: 15px; background-color: #f8f9f8; border-left: 4px solid #344a3e; border-radius: 4px;">
+        <h3 style="color: #344a3e; margin-top: 0; font-size: 16px;">Implicaciones Biológicas</h3>
+        <p style="line-height: 1.6; color: #555; font-size: 13px; margin-bottom: 0;">${ext.biologicalDeepDive || data.bioExplanation}</p>
       </div>
     </div>`,
 
-    // Page 3: Products
+    // Page 2: Routine & Lifestyle
     `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
-      <h3 style="color: #344a3e; border-bottom: 1px solid #8c9b8a; padding-bottom: 10px;">Recomendación Nutracéutica</h3>
-      <div style="margin-top: 20px;">
-        ${data.products.map(p => `
-          <div style="margin-bottom: 15px; background-color: #f8f9f8; padding: 15px; border-radius: 8px;">
-            <strong style="color: #344a3e;">${p.name}</strong><br>
-            <span style="font-size: 12px; color: #666;">${p.benefit}</span>
+      <h3 style="color: #344a3e; border-bottom: 2px solid #8c9b8a; padding-bottom: 5px; margin-top: 0;">📅 Tu Hoja de Ruta Diaria</h3>
+      
+      <div style="margin-top: 15px;">
+        <div style="margin-bottom: 15px; padding: 10px; background: #fff; border: 1px solid #eee; border-radius: 8px;">
+          <strong style="color: #344a3e;">🌅 Mañana:</strong>
+          <p style="font-size: 13px; color: #555; margin: 5px 0 0;">${data.routine.morning}</p>
+        </div>
+        <div style="margin-bottom: 15px; padding: 10px; background: #fff; border: 1px solid #eee; border-radius: 8px;">
+          <strong style="color: #344a3e;">🍛 Mediodía:</strong>
+          <p style="font-size: 13px; color: #555; margin: 5px 0 0;">${data.routine.noon || 'Consumo nutricional balanceado.'}</p>
+        </div>
+        <div style="margin-bottom: 15px; padding: 10px; background: #fff; border: 1px solid #eee; border-radius: 8px;">
+          <strong style="color: #344a3e;">🌆 Tarde:</strong>
+          <p style="font-size: 13px; color: #555; margin: 5px 0 0;">${data.routine.afternoon}</p>
+        </div>
+        <div style="margin-bottom: 15px; padding: 10px; background: #fff; border: 1px solid #eee; border-radius: 8px;">
+          <strong style="color: #344a3e;">🌙 Noche:</strong>
+          <p style="font-size: 13px; color: #555; margin: 5px 0 0;">${data.routine.night}</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; background-color: #344a3e; color: white; border-radius: 12px;">
+        <h3 style="margin-top: 0; color: #8c9b8a; font-size: 18px;">💡 Recomendaciones Críticas</h3>
+        <p style="line-height: 1.6; font-size: 13px; margin-bottom: 0;">${ext.lifestyleRecommendations || 'Prioriza el descanso de 7-8 horas y una hidratación constante durante el día.'}</p>
+      </div>
+    </div>`,
+
+    // Page 3: Extended Products
+    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
+      <h3 style="color: #344a3e; border-bottom: 2px solid #8c9b8a; padding-bottom: 5px; margin-top: 0;">🔬 Kit Nutracéutico Sugerido</h3>
+      <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Basado en tu perfil metabólico, estos son los aliados clave para tu transformación:</p>
+      
+      <div style="margin-top: 10px;">
+        ${(ext.productsExtended || data.products).map(p => `
+          <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+              <strong style="color: #344a3e; font-size: 16px;">${p.name}</strong>
+            </div>
+            <p style="font-size: 13px; color: #444; margin: 8px 0;"><strong>Por qué es vital:</strong> ${p.fullDescription || p.benefit}</p>
+            <p style="font-size: 12px; color: #344a3e; background: #f0f7f2; padding: 8px; border-radius: 5px; margin: 0;">
+              <strong>🔔 Cómo consumirlo:</strong> ${p.howToUse || 'Consultar guía de empaque.'}
+            </p>
           </div>
         `).join('')}
       </div>
-      <div style="margin-top: 50px; text-align: center; color: #8c9b8a;">
-        <p>FuXion - Advanced Health © 2026</p>
+
+      <div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+        <p style="font-size: 11px; color: #8c9b8a; margin: 0;">
+          Este reporte es una guía informativa generada por inteligencia artificial basada en los datos reportados.
+          Consulte siempre con un experto en nutrición para ajustes específicos.
+        </p>
+        <p style="font-size: 12px; color: #344a3e; font-weight: bold; margin-top: 10px;">FuXion - Advanced Health © 2026</p>
       </div>
     </div>`
   ];
@@ -331,11 +367,17 @@ async function generatePDFAttachment() {
 
   for (let i = 0; i < sections.length; i++) {
     pdfContainer.innerHTML = sections[i];
-    const canvas = await html2canvas(pdfContainer, { scale: 2 });
+    // We add a small delay to ensure rendering matches CSS
+    await new Promise(r => setTimeout(r, 100));
+    const canvas = await html2canvas(pdfContainer, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
+    });
     const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
     if (i > 0) doc.addPage();
-    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
   }
 
   document.body.removeChild(pdfContainer);
