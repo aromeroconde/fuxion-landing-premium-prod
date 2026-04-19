@@ -11,12 +11,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // EmailJS Configuration
-const EMAILJS_SERVICE_ID = 'service_fuxion'
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'
-const EMAILJS_CUSTOMER_TEMPLATE = 'template_customer'
-const EMAILJS_TEAM_TEMPLATE = 'template_internal'
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+const EMAILJS_CUSTOMER_TEMPLATE = import.meta.env.VITE_EMAILJS_CUSTOMER_TEMPLATE
+const EMAILJS_TEAM_TEMPLATE = import.meta.env.VITE_EMAILJS_TEAM_TEMPLATE
 
-if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+if (EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
   emailjs.init(EMAILJS_PUBLIC_KEY);
 }
 
@@ -480,8 +480,8 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
 }
 
 async function sendLeadEmails(leadData) {
-  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-    console.warn('EmailJS: No se han configurado los IDs reales. Los correos no se enviarán.');
+  if (!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+    console.warn('EmailJS: No se han configurado los IDs reales en el archivo .env. Los correos no se enviarán.');
     return;
   }
 
