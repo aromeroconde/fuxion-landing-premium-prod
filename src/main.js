@@ -616,7 +616,7 @@ async function sendLeadEmails(leadData, pdfUrl) {
 async function uploadPDFToStorage(pdfBlob, fileName) {
   try {
     const { data, error } = await supabase.storage
-      .from('reports')
+      .from('reports-fuxion')
       .upload(`public/${fileName}`, pdfBlob, {
         cacheControl: '3600',
         upsert: true
@@ -625,7 +625,7 @@ async function uploadPDFToStorage(pdfBlob, fileName) {
     if (error) throw error;
 
     const { data: { publicUrl } } = supabase.storage
-      .from('reports')
+      .from('reports-fuxion')
       .getPublicUrl(`public/${fileName}`);
 
     return publicUrl;
