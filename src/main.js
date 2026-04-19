@@ -262,6 +262,86 @@ async function generateReport() {
   }
 }
 
+/**
+ * Generates a professional multi-page PDF blob for email attachment.
+ */
+async function generatePDFAttachment() {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  const pdfContainer = document.createElement('div');
+  pdfContainer.id = 'print-template';
+  pdfContainer.style.position = 'fixed';
+  pdfContainer.style.left = '-9999px';
+  pdfContainer.style.top = '0';
+  pdfContainer.style.width = '210mm'; // A4 Width
+  pdfContainer.style.backgroundColor = '#ffffff';
+  pdfContainer.style.fontFamily = "'Segoe UI', Roboto, sans-serif";
+
+  const data = currentReportData;
+  const sections = [
+    // Page 1: Diagnosis & Analysis
+    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #344a3e; margin: 0; font-size: 28px;">Reporte de Bienestar FuXion</h1>
+        <p style="color: #8c9b8a; font-size: 16px;">Evaluación Nutracéutica Personalizada</p>
+      </div>
+      
+      <div style="background-color: #344a3e; color: white; padding: 15px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+        <h2 style="margin: 0;">Edad Biológica: ${data.biologicalAge.age} años</h2>
+        <p style="margin: 5px 0 0; opacity: 0.9;">${data.biologicalAge.badge}</p>
+      </div>
+
+      <h3 style="color: #344a3e; border-bottom: 1px solid #8c9b8a; padding-bottom: 10px;">Análisis Metabólico</h3>
+      <p style="line-height: 1.6; color: #444; font-size: 14px;">${data.metabolicAnalysis}</p>
+    </div>`,
+
+    // Page 2: Routine
+    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
+      <h3 style="color: #344a3e; border-bottom: 1px solid #8c9b8a; padding-bottom: 10px;">Tu Hoja de Ruta Diaria</h3>
+      <div style="margin-top: 20px;">
+        <div style="margin-bottom: 15px;"><strong>Morning:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.morning}</span></div>
+        <div style="margin-bottom: 15px;"><strong>Noon:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.noon}</span></div>
+        <div style="margin-bottom: 15px;"><strong>Afternoon:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.afternoon}</span></div>
+        <div style="margin-bottom: 15px;"><strong>Night:</strong><br><span style="font-size: 13px; color: #555;">${data.routine.night}</span></div>
+      </div>
+    </div>`,
+
+    // Page 3: Products
+    `<div class="pdf-page" style="padding: 20mm; min-height: 297mm;">
+      <h3 style="color: #344a3e; border-bottom: 1px solid #8c9b8a; padding-bottom: 10px;">Recomendación Nutracéutica</h3>
+      <div style="margin-top: 20px;">
+        ${data.products.map(p => `
+          <div style="margin-bottom: 15px; background-color: #f8f9f8; padding: 15px; border-radius: 8px;">
+            <strong style="color: #344a3e;">${p.name}</strong><br>
+            <span style="font-size: 12px; color: #666;">${p.benefit}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top: 50px; text-align: center; color: #8c9b8a;">
+        <p>FuXion - Advanced Health © 2026</p>
+      </div>
+    </div>`
+  ];
+
+  document.body.appendChild(pdfContainer);
+
+  for (let i = 0; i < sections.length; i++) {
+    pdfContainer.innerHTML = sections[i];
+    const canvas = await html2canvas(pdfContainer, { scale: 2 });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    if (i > 0) doc.addPage();
+    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+  }
+
+  document.body.removeChild(pdfContainer);
+  return doc.output('blob');
+}
+
 async function downloadPDF() {
   const btns = document.querySelectorAll('.download-pdf-btn');
   const data = currentReportData;
@@ -468,8 +548,23 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
     leadFormContent.style.display = 'none';
     leadSuccess.style.display = 'block';
 
+    // Generate PDF for Email Attachment
+    let pdfBase64 = null;
+    try {
+      console.log('Generando PDF adjunto...');
+      const pdfBlob = await generatePDFAttachment();
+      // EmailJS handles Data URIs directly
+      pdfBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(pdfBlob);
+      });
+    } catch (pdfErr) {
+      console.error('No se pudo generar el PDF para adjuntar:', pdfErr);
+    }
+
     // Trigger Automated Emailing
-    sendLeadEmails(leadData);
+    sendLeadEmails(leadData, pdfBase64);
 
   } catch (error) {
     console.error('Error saving lead:', error);
@@ -479,7 +574,7 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
   }
 }
 
-async function sendLeadEmails(leadData) {
+async function sendLeadEmails(leadData, pdfBase64) {
   if (!EMAILJS_PUBLIC_KEY || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
     console.warn('EmailJS: No se han configurado los IDs reales en el archivo .env. Los correos no se enviarán.');
     return;
@@ -508,10 +603,11 @@ async function sendLeadEmails(leadData) {
       routine_noon: leadData.report_data?.routine?.noon,
       routine_afternoon: leadData.report_data?.routine?.afternoon,
       routine_night: leadData.report_data?.routine?.night,
-      product_suggestions: leadData.report_data?.products?.map(p => p.name).join(', ')
+      product_suggestions: leadData.report_data?.products?.map(p => p.name).join(', '),
+      pdf_attachment: pdfBase64 // This matches the "Variable Attachment" name in EmailJS
     });
 
-    console.log('Emails sent successfully via EmailJS');
+    console.log('Emails sent successfully via EmailJS with PDF attachment');
   } catch (error) {
     console.error('EmailJS Error:', error);
   }
