@@ -576,6 +576,7 @@ async function saveLead(e) {
   submitBtn.textContent = 'Enviando...';
 
   const name = leadNameInput ? leadNameInput.value : userName;
+  userName = name; // Actualizar globalmente para el PDF
   const email = leadEmail.value;
   const phone = leadPhone.value;
 
@@ -603,7 +604,7 @@ async function saveLead(e) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText} `);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
     // Generate WhatsApp Summary Message
@@ -702,6 +703,7 @@ async function sendLeadEmails(leadData, pdfUrl) {
  */
 async function uploadPDFToStorage(pdfBlob, fileName) {
   try {
+    console.log(`Subiendo PDF (${pdfBlob.size} bytes) a Supabase Storage...`);
     const { data, error } = await supabase.storage
       .from('reports-fuxion')
       .upload(fileName, pdfBlob, {
@@ -710,14 +712,16 @@ async function uploadPDFToStorage(pdfBlob, fileName) {
       });
 
     if (error) {
-      console.error('Error de subida Supabase:', error.message);
+      console.error('Error de subida Supabase (Detalle):', error);
       throw error;
     }
 
+    console.log('Subida exitosa, obteniendo URL pública para:', fileName);
     const { data: { publicUrl } } = supabase.storage
       .from('reports-fuxion')
       .getPublicUrl(fileName);
 
+    console.log('URL Pública obtenida:', publicUrl);
     return publicUrl;
   } catch (err) {
     console.error('Supabase Storage Exception:', err);
