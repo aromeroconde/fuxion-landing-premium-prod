@@ -3,11 +3,22 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { createClient } from '@supabase/supabase-js'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
+import emailjs from '@emailjs/browser'
 
 // --- Supabase Config ---
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// EmailJS Configuration
+const EMAILJS_SERVICE_ID = 'service_fuxion'
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'
+const EMAILJS_CUSTOMER_TEMPLATE = 'template_customer'
+const EMAILJS_TEAM_TEMPLATE = 'template_internal'
+
+if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+}
 
 // --- Chatbot Logic ---
 
@@ -245,24 +256,6 @@ async function generateReport() {
     chatModal.style.display = 'none';
     reportModal.style.display = 'block';
 
-    // Add Download PDF Button to both containers to ensure visibility
-    const containers = ['lead-form-content', 'lead-success'];
-    containers.forEach(containerId => {
-      const container = document.getElementById(containerId);
-      if (container && !container.querySelector('.download-pdf-btn')) {
-        const downloadBtn = document.createElement('button');
-        downloadBtn.className = 'btn btn-secondary download-pdf-btn';
-        downloadBtn.style.width = '100%';
-        downloadBtn.style.marginTop = '1rem';
-        downloadBtn.style.backgroundColor = '#f0f0f0';
-        downloadBtn.style.color = 'var(--color-primary)';
-        downloadBtn.style.border = '1px solid var(--color-primary)';
-        downloadBtn.innerHTML = '📄 Descargar Versión PDF (BETA)';
-        downloadBtn.onclick = downloadPDF;
-        container.appendChild(downloadBtn);
-      }
-    });
-
   } catch (error) {
     console.error('Report Generation Error:', error);
     addMessage('Hubo un problema al generar el tablero visual. Por favor, hablemos por WhatsApp para darte los resultados.', true);
@@ -475,11 +468,52 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
     leadFormContent.style.display = 'none';
     leadSuccess.style.display = 'block';
 
+    // Trigger Automated Emailing
+    sendLeadEmails(leadData);
+
   } catch (error) {
     console.error('Error saving lead:', error);
     alert('Hubo un error al guardar tus datos. Por favor, intenta de nuevo o contacta directamente por WhatsApp.');
     submitBtn.disabled = false;
     submitBtn.textContent = 'Solicitar Reporte Personalizado';
+  }
+}
+
+async function sendLeadEmails(leadData) {
+  if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+    console.warn('EmailJS: No se han configurado los IDs reales. Los correos no se enviarán.');
+    return;
+  }
+
+  try {
+    // 1. Notificación al Equipo (contacto@advancedhealth.com.co)
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEAM_TEMPLATE, {
+      team_email: 'contacto@advancedhealth.com.co',
+      lead_name: leadData.name,
+      lead_email: leadData.email,
+      lead_phone: leadData.phone,
+      lead_goal: leadData.goal,
+      biological_age: leadData.biological_age,
+      metabolic_analysis: leadData.report_data?.metabolicAnalysis?.substring(0, 500)
+    });
+
+    // 2. Reporte al Cliente
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CUSTOMER_TEMPLATE, {
+      user_name: leadData.name,
+      user_email: leadData.email,
+      goal: leadData.goal,
+      biological_age: leadData.biological_age,
+      analysis: leadData.report_data?.metabolicAnalysis,
+      routine_morning: leadData.report_data?.routine?.morning,
+      routine_noon: leadData.report_data?.routine?.noon,
+      routine_afternoon: leadData.report_data?.routine?.afternoon,
+      routine_night: leadData.report_data?.routine?.night,
+      product_suggestions: leadData.report_data?.products?.map(p => p.name).join(', ')
+    });
+
+    console.log('Emails sent successfully via EmailJS');
+  } catch (error) {
+    console.error('EmailJS Error:', error);
   }
 }
 
