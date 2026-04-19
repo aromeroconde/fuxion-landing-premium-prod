@@ -1,6 +1,8 @@
 import './style.css'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { createClient } from '@supabase/supabase-js'
+import { jsPDF } from 'jspdf'
+import html2canvas from 'html2canvas'
 
 // --- Supabase Config ---
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -231,9 +233,77 @@ async function generateReport() {
     chatModal.style.display = 'none';
     reportModal.style.display = 'block';
 
+    // Add Download PDF Button if not already there
+    if (!document.getElementById('download-pdf-btn')) {
+      const downloadBtn = document.createElement('button');
+      downloadBtn.id = 'download-pdf-btn';
+      downloadBtn.className = 'btn btn-secondary';
+      downloadBtn.style.width = '100%';
+      downloadBtn.style.marginTop = '1rem';
+      downloadBtn.style.backgroundColor = '#f0f0f0';
+      downloadBtn.style.color = 'var(--color-primary)';
+      downloadBtn.style.border = '1px solid var(--color-primary)';
+      downloadBtn.innerHTML = '📄 Descargar Versión PDF (BETA)';
+      downloadBtn.onclick = downloadPDF;
+      document.getElementById('lead-form-content').appendChild(downloadBtn);
+    }
+
   } catch (error) {
     console.error('Report Generation Error:', error);
     addMessage('Hubo un problema al generar el tablero visual. Por favor, hablemos por WhatsApp para darte los resultados.', true);
+  }
+}
+
+async function downloadPDF() {
+  const element = document.querySelector('.report-dashboard');
+  const btn = document.getElementById('download-pdf-btn');
+  const originalBtnText = btn.innerHTML;
+
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Generando PDF...';
+
+  try {
+    // Scroll to top of modal to ensure capture starts from top
+    document.getElementById('report-modal').scrollTop = 0;
+
+    // Show all tabs temporarily to capture everything? 
+    // Actually, usually we capture only the active tab or a consolidated view.
+    // For now, let's capture the dashboard as is (active tab).
+
+    // Hide UI elements not needed in PDF
+    const closeBtn = document.getElementById('close-report');
+    const tabs = document.querySelector('.report-tabs');
+    if (closeBtn) closeBtn.style.display = 'none';
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    if (closeBtn) closeBtn.style.display = 'flex';
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`Reporte_Bienestar_${userName.replace(/\s+/g, '_')}.pdf`);
+
+    btn.innerHTML = '✅ PDF Descargado';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = originalBtnText;
+    }, 3000);
+
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Hubo un error al generar el PDF. Por favor, intenta de nuevo.');
+    btn.disabled = false;
+    btn.innerHTML = originalBtnText;
   }
 }
 
