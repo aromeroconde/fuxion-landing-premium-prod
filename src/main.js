@@ -551,15 +551,18 @@ Me gustaría recibir mi plan detallado en PDF y coordinar mi asesoría. Mi corre
     // Generate and Upload PDF for Email Link
     let pdfUrl = null;
     try {
-      console.log('Generando PDF y subiendo a storage...');
+      console.log('--- Iniciando Procesamiento de PDF ---');
       const pdfBlob = await generatePDFAttachment();
       const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+      console.log('Subiendo a Supabase Storage bucket: reports-fuxion, archivo:', fileName);
       pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
+      console.log('URL de PDF obtenida:', pdfUrl);
     } catch (pdfErr) {
-      console.error('No se pudo procesar el PDF para el link:', pdfErr);
+      console.error('Error crítico procesando PDF:', pdfErr);
     }
 
     // Trigger Automated Emailing
+    console.log('Enviando correos vía EmailJS...');
     sendLeadEmails(leadData, pdfUrl);
 
   } catch (error) {
@@ -617,20 +620,23 @@ async function uploadPDFToStorage(pdfBlob, fileName) {
   try {
     const { data, error } = await supabase.storage
       .from('reports-fuxion')
-      .upload(`public/${fileName}`, pdfBlob, {
+      .upload(fileName, pdfBlob, {
         cacheControl: '3600',
         upsert: true
       });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error de subida Supabase:', error.message);
+      throw error;
+    }
 
     const { data: { publicUrl } } = supabase.storage
       .from('reports-fuxion')
-      .getPublicUrl(`public/${fileName}`);
+      .getPublicUrl(fileName);
 
     return publicUrl;
   } catch (err) {
-    console.error('Supabase Storage Error:', err);
+    console.error('Supabase Storage Exception:', err);
     return null;
   }
 }
