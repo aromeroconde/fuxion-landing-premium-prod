@@ -109,12 +109,13 @@ async function openChat(goalTitle) {
     2. Haz SIEMPRE SOLO UNA PREGUNTA (o dos muy cortas y relacionadas) a la vez.
     3. A través de la conversación, debes indagar sobre estos pilares:
        - Edad/Peso/Sexo y ESTATURA. (IMPORTANTE: Solo atender a personas de 15 años o más. Si es menor, dile amablemente que por ahora solo puedes asesorar a mayores de 15 años).
-       - Antecedentes de salud: Pregunta si tiene alguna enfermedad de base o diagnóstico como hipertensión, cardiopatías, colesterol, diabetes, embarazo o lactancia.
-       - Descanso (Horas y calidad).
+       - Salud y Diagnósticos: Hazlo en DOS RONDAS para no saturar:
+         * RONDA 1 (Digestivo/Metabólico): Pregunta por Gastritis, Estreñimiento, Helicobacter, Reflujo, Hígado graso, Hipertensión, Diabetes/Glucosa alta, Colesterol/Triglicéridos.
+         * RONDA 2 (Físico/Emocional/Otros): Pregunta por Artrosis/Artritis, Dolores, si es Deportista, Grasa visceral, Cálculos riñones, Retención líquidos/Cistitis, Caída de cabello, Ansiedad/Depresión, Sobrepeso, Cirugías, Pérdida de masa muscular.
+       - Descanso (Horas y calidad de sueño).
        - Alimentación e Hidratación.
        - Actividad física / Sedentarismo.
        - Estrés y estado emocional.
-       - Obstáculos principales.
     4. IMPORTANTE: Antes de terminar, cuando ya tengas los datos de salud, PREGUNTA EL NOMBRE del usuario para "guardar su progreso y personalizar su hoja de ruta".
     5. CUANDO TENGAS EL NOMBRE Y LA INFO, dile de forma natural que vas a analizar sus datos para crear su reporte.
     6. AL FINAL DE ESE ÚLTIMO MENSAJE, escribe EXACTAMENTE: [REPORT_READY].
@@ -598,10 +599,35 @@ async function saveLead(e) {
   submitBtn.disabled = true;
   submitBtn.textContent = 'Procesando...';
 
-  const name = leadNameInput ? leadNameInput.value : userName;
+  const name = leadNameInput ? leadNameInput.value.trim() : userName;
+  const email = leadEmail.value.trim();
+  const phone = leadPhone.value.trim();
+
+  // --- Validación Interna Robusta ---
+  if (name.length < 3) {
+    alert("Por favor, ingresa tu nombre completo (mínimo 3 caracteres).");
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Solicitar Reporte Personalizado';
+    return;
+  }
+
+  const emailRegex = /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/;
+  if (!emailRegex.test(email)) {
+    alert("Por favor, ingresa un correo electrónico válido.");
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Solicitar Reporte Personalizado';
+    return;
+  }
+
+  const phoneRegex = /^\\d{7,15}$/;
+  if (!phoneRegex.test(phone)) {
+    alert("Por favor, ingresa un número de teléfono válido (solo números, entre 7 y 15 dígitos).");
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Solicitar Reporte Personalizado';
+    return;
+  }
+
   userName = name;
-  const email = leadEmail.value;
-  const phone = leadPhone.value;
 
   try {
     // --- 1. Generar y Subir PDF Primero ---

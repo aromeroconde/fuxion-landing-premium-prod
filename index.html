@@ -1020,12 +1020,13 @@
             </p>
             <form id="lead-form"
               style="display: flex; flex-direction: column; gap: 1rem; max-width: 400px; margin: 0 auto;">
-              <input type="text" id="lead-name" placeholder="Tu nombre completo" required
+              <input type="text" id="lead-name" placeholder="Tu nombre completo" required minlength="3"
                 style="padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-outline-variant); background: white; font-family: inherit; font-size: 1rem;">
               <input type="email" id="lead-email" placeholder="Tu mejor correo electrónico" required
                 style="padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-outline-variant); background: white; font-family: inherit; font-size: 1rem;">
               <div style="display: flex; gap: 0.5rem;">
                 <input type="tel" id="lead-phone" placeholder="Tu número de WhatsApp (ej: 310...)" required
+                  pattern="[0-9]{7,15}"
                   style="flex: 1; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-outline-variant); background: white; font-family: inherit; font-size: 1rem;">
               </div>
               <button type="submit" id="submit-lead" class="btn btn-primary"
