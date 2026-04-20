@@ -310,7 +310,7 @@ async function generatePDFAttachment() {
         </div>
         <div style="text-align: right;">
           <div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Institución</div>
-          <div style="font-size: 16px; font-weight: bold;">ADVANCED HEALTH</div>
+          <div style="font-size: 16px; font-weight: bold;">Advanced Health</div>
         </div>
       </div>
     </div>`,
@@ -340,7 +340,7 @@ async function generatePDFAttachment() {
       </div>
       
       <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 10px; color: #999;">
-        <span>FUXION SCIENCE LABS</span>
+        <span>FuXion Science Labs</span>
         <span>${userName} - Reporte Confidencial</span>
       </div>
     </div>`,
@@ -444,7 +444,7 @@ async function generatePDFAttachment() {
       </div>
 
       <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 10px; color: #999;">
-        <span>FUXION SCIENCE LABS</span>
+        <span>FuXion Science Labs</span>
         <span>Optimizando tu Rendimiento</span>
       </div>
     </div>`
@@ -482,13 +482,16 @@ async function generatePDFAttachment() {
         ${pageIdx === productChunks.length - 1 ? `
           <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; text-align: center;">
             <div style="width: 60px; height: 3px; background: #344a3e; margin: 0 auto 20px;"></div>
+            <p style="font-size: 11px; color: #8c9b8a; line-height: 1.5; margin-bottom: 5px;">
+              Este reporte es informativo y no pretende diagnosticar, tratar o curar enfermedades. Ante cualquier condición médica, consulte a su médico.
+            </p>
             <p style="font-size: 11px; color: #8c9b8a; line-height: 1.5; margin-bottom: 15px;">
-              Este reporte clínico digital optimiza funciones biológicas a través de nutrición avanzada.
+              La nutrición avanzada es un complemento de un estilo de vida saludable.
             </p>
             <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
-              <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">FU XION</span>
+              <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">FuXion</span>
               <span style="width: 1px; height: 20px; background: #ddd;"></span>
-              <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">ADVANCED HEALTH</span>
+              <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">Advanced Health</span>
             </div>
           </div>
         ` : `
