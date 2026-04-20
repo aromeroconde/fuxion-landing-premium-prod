@@ -611,7 +611,7 @@ async function saveLead(e) {
     return;
   }
 
-  const emailRegex = /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/;
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
   if (!emailRegex.test(email)) {
     alert("Por favor, ingresa un correo electrónico válido.");
     submitBtn.disabled = false;
@@ -619,7 +619,7 @@ async function saveLead(e) {
     return;
   }
 
-  const phoneRegex = /^\\d{7,15}$/;
+  const phoneRegex = /^\d{7,15}$/;
   if (!phoneRegex.test(phone)) {
     alert("Por favor, ingresa un número de teléfono válido (solo números, entre 7 y 15 dígitos).");
     submitBtn.disabled = false;
