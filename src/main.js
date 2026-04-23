@@ -536,8 +536,8 @@ async function generatePDFAttachment() {
   `;
 
   const gotenbergUrl = '/gotenberg-api';
-  const basicAuthUser = import.meta.env.VITE_GOTENBERG_USERNAME;
-  const basicAuthPass = import.meta.env.VITE_GOTENBERG_PASSWORD;
+  const basicAuthUser = import.meta.env.VITE_GOTENBERG_USERNAME?.replace(/^"|"$/g, '');
+  const basicAuthPass = import.meta.env.VITE_GOTENBERG_PASSWORD?.replace(/^"|"$/g, '');
 
   const headers = {};
   if (basicAuthUser && basicAuthPass) {
