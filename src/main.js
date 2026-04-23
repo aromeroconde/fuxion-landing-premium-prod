@@ -518,6 +518,7 @@ async function generatePDFAttachment() {
       <meta charset="UTF-8">
       <style>
         ${rawStyle}
+        html { font-size: 18px; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
         .pdf-page {
           width: 8.5in;
@@ -567,7 +568,6 @@ async function generatePDFAttachment() {
   formData.append('marginLeft', '0');
   formData.append('marginRight', '0');
   formData.append('printBackground', 'true');
-  formData.append('scale', '1.3');
 
   const res = await fetch(`${gotenbergUrl}/forms/chromium/convert/html`, {
     method: 'POST',
