@@ -1,8 +1,7 @@
 import './style.css'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { createClient } from '@supabase/supabase-js'
-import { jsPDF } from 'jspdf'
-import html2canvas from 'html2canvas'
+
 import emailjs from '@emailjs/browser'
 
 // --- Supabase Config ---
