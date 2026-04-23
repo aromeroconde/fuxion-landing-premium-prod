@@ -567,6 +567,7 @@ async function generatePDFAttachment() {
   formData.append('marginLeft', '0');
   formData.append('marginRight', '0');
   formData.append('printBackground', 'true');
+  formData.append('scale', '1.3');
 
   const res = await fetch(`${gotenbergUrl}/forms/chromium/convert/html`, {
     method: 'POST',
