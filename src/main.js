@@ -295,7 +295,7 @@ async function generatePDFAttachment() {
 
   const finalPages = [
     // Page 1: COVER
-    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #344a3e; color: white; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+    `<div class="pdf-page" style="padding: 0; background: #344a3e; color: white; display: flex; flex-direction: column; overflow: hidden; position: relative;">
       <img src="pdf_cover.png" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0.4;">
       <div style="position: relative; z-index: 2; padding: 40mm 25mm; flex: 1; display: flex; flex-direction: column; justify-content: center;">
         <div style="font-size: 14px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Reporte Bio-Individual</div>
@@ -316,7 +316,7 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 2: CLINICAL DIAGNOSIS
-    `<div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #fff; position: relative;">
+    `<div class="pdf-page" style="padding: 25mm; background: #fff; position: relative;">
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
         <div>
           <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 01</h3>
@@ -346,7 +346,7 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 3: THE PHILOSOPHY
-    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #f8f9f8; position: relative; display: flex; flex-direction: column;">
+    `<div class="pdf-page" style="padding: 0; background: #f8f9f8; position: relative; display: flex; flex-direction: column;">
       <div style="height: 35%; position: relative; overflow: hidden;">
         <img src="Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
         <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(0,0,0,0.4), transparent);"></div>
@@ -372,7 +372,7 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 4: ROADMAP
-    `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative; display: flex; flex-direction: column;">
+    `<div class="pdf-page" style="padding: 0; background: #fff; position: relative; display: flex; flex-direction: column;">
       <div style="height: 30%; position: relative; overflow: hidden;">
         <img src="cocina.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.4), transparent);"></div>
@@ -409,7 +409,7 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 5: NUTRITION & EXERCISE
-    `<div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #fff; position: relative;">
+    `<div class="pdf-page" style="padding: 25mm; background: #fff; position: relative;">
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
         <div>
           <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 03</h3>
@@ -453,7 +453,7 @@ async function generatePDFAttachment() {
   // Dynamically add Product Pages (Section 04)
   productChunks.forEach((chunk, pageIdx) => {
     finalPages.push(`
-    <div class="pdf-page" style="padding: 25mm; min-height: 297mm; background: #f8f9f8; position: relative;">
+    <div class="pdf-page" style="padding: 25mm; background: #f8f9f8; position: relative;">
         <div style="margin-bottom: 35px; border-bottom: 2px solid #344a3e; padding-bottom: 20px;">
           <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 04 ${productChunks.length > 1 ? `(Pág. ${pageIdx + 1})` : ''}</h3>
           <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 28px;">Tu Kit Nutracéutico Sugerido</h2>
