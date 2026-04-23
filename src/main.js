@@ -297,7 +297,7 @@ async function generatePDFAttachment() {
   const finalPages = [
     // Page 1: COVER
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #344a3e; color: white; display: flex; flex-direction: column; overflow: hidden; position: relative;">
-      <img src="/images/pdf_cover.png" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0.4;">
+      <img src="pdf_cover.png" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0.4;">
       <div style="position: relative; z-index: 2; padding: 40mm 25mm; flex: 1; display: flex; flex-direction: column; justify-content: center;">
         <div style="font-size: 14px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Reporte Bio-Individual</div>
         <h1 style="font-size: 64px; margin: 0; line-height: 1.1; font-weight: 800; letter-spacing: -1px;">El Camino a tu <br><span style="color: #c9e2d1;">Mejor Versión</span></h1>
@@ -349,7 +349,7 @@ async function generatePDFAttachment() {
     // Page 3: THE PHILOSOPHY
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #f8f9f8; position: relative; display: flex; flex-direction: column;">
       <div style="height: 35%; position: relative; overflow: hidden;">
-        <img src="/images/Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
+        <img src="Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
         <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(0,0,0,0.4), transparent);"></div>
       </div>
       <div style="padding: 25mm; flex: 1;">
@@ -361,7 +361,7 @@ async function generatePDFAttachment() {
         </p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
           <div style="background: white; border-radius: 12px; height: 180px; overflow: hidden;">
-            <img src="/images/Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <div style="font-size: 24px; margin-bottom: 10px;">⚡</div>
@@ -375,7 +375,7 @@ async function generatePDFAttachment() {
     // Page 4: ROADMAP
     `<div class="pdf-page" style="padding: 0; min-height: 297mm; background: #fff; position: relative; display: flex; flex-direction: column;">
       <div style="height: 30%; position: relative; overflow: hidden;">
-        <img src="/images/cocina.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
+        <img src="cocina.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.4), transparent);"></div>
         <div style="position: absolute; bottom: 15px; left: 25mm; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
           <h3 style="margin: 0; font-size: 12px; letter-spacing: 2px;">SECCIÓN 02</h3>
@@ -504,37 +504,86 @@ async function generatePDFAttachment() {
     `);
   });
 
-  const pdfRenderContainer = document.createElement('div');
-  pdfRenderContainer.style.position = 'fixed';
-  pdfRenderContainer.style.left = '-9999px';
-  pdfRenderContainer.style.top = '0';
-  pdfRenderContainer.style.width = '210mm';
-  pdfRenderContainer.innerHTML = finalPages.join('');
-  document.body.appendChild(pdfRenderContainer);
+  const rawStyle = `
+    @import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;700;800&display=swap');
+    
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 800; }
+  `;
 
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const renderedPages = pdfRenderContainer.querySelectorAll('.pdf-page');
+  const combinedHtml = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        ${rawStyle}
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
+        .pdf-page {
+          width: 8.5in;
+          height: 11in;
+          box-sizing: border-box;
+          page-break-after: always;
+          overflow: hidden;
+          background: #fff;
+        }
+      </style>
+    </head>
+    <body>
+      ${finalPages.join('')}
+    </body>
+    </html>
+  `;
 
-  for (let i = 0; i < renderedPages.length; i++) {
-    const canvas = await html2canvas(renderedPages[i], {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      windowWidth: 794,
-    });
+  let gotenbergUrl = import.meta.env.VITE_GOTENBERG_URL || 'https://advgotenberg.advancedhealth.com.co';
+  if (import.meta.env.DEV) {
+    gotenbergUrl = '/gotenberg-api';
+  }
+  const basicAuthUser = import.meta.env.VITE_GOTENBERG_USERNAME;
+  const basicAuthPass = import.meta.env.VITE_GOTENBERG_PASSWORD;
 
-    const imgData = canvas.toDataURL('image/png');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+  const headers = {};
+  if (basicAuthUser && basicAuthPass) {
+    headers['Authorization'] = 'Basic ' + btoa(basicAuthUser + ':' + basicAuthPass);
   }
 
-  const pdfBlob = pdf.output('blob');
-  document.body.removeChild(pdfRenderContainer);
-  return pdfBlob;
+  const formData = new FormData();
+  formData.append('files', new Blob([combinedHtml], { type: 'text/html' }), 'index.html');
+
+  try {
+    const [coverRes, labRes, cocinaRes] = await Promise.all([
+      fetch('/images/pdf_cover.png'),
+      fetch('/images/Lab.png'),
+      fetch('/images/cocina.png')
+    ]);
+    if (coverRes.ok) formData.append('files', await coverRes.blob(), 'pdf_cover.png');
+    if (labRes.ok) formData.append('files', await labRes.blob(), 'Lab.png');
+    if (cocinaRes.ok) formData.append('files', await cocinaRes.blob(), 'cocina.png');
+  } catch (err) {
+    console.error('Error fetching images for PDF:', err);
+  }
+
+  formData.append('paperWidth', '8.5');
+  formData.append('paperHeight', '11');
+  formData.append('marginTop', '0');
+  formData.append('marginBottom', '0');
+  formData.append('marginLeft', '0');
+  formData.append('marginRight', '0');
+  formData.append('printBackground', 'true');
+
+  const res = await fetch(`${gotenbergUrl}/forms/chromium/convert/html`, {
+    method: 'POST',
+    headers,
+    body: formData
+  });
+
+  if (!res.ok) {
+    console.error('Gotenberg API error', await res.text());
+    throw new Error('No se pudo generar el reporte premium con Gotenberg.');
+  }
+
+  return await res.blob();
 }
 
 async function downloadPDF() {
@@ -682,13 +731,13 @@ async function saveLead(e) {
     await sendLeadEmails(leadData, pdfUrl);
 
     // Actualizar link de WhatsApp con mensaje de alta conversión enfocado en Hallazgos + Productos
-    const productList = currentReportData?.products?.map(p => `• *${p.name}*`).join('\n') || '• Kit Personalizado';
+    const productList = currentReportData?.products?.map(p => `• * ${p.name} * `).join('\n') || '• Kit Personalizado';
     const waGoal = currentGoal || 'Mejorar mi Salud';
     const waBadge = currentReportData?.biologicalAge?.badge || 'Alerta Metabólica';
     const realAgeNum = window.userAge || '??';
     const bioAgeNum = currentReportData?.biologicalAge?.age || '??';
 
-    const waMsg = `¡Hola Camila! 🧬 Soy ${name}. Acabo de terminar mi análisis de salud en la web y me urge empezar.\n\n📌 *RESUMEN DE MI DIAGNÓSTICO:*\n• *Meta:* ${waGoal}\n• *Estado:* ${waBadge} (Edad Real: ${realAgeNum} - Biol: ${bioAgeNum})\n\n📦 *MI KIT RECOMENDADO:*\n${productList}\n\nCamila, necesito que me asesores para empezar con estos productos. Mi correo es ${email}.`;
+    const waMsg = `¡Hola Camila! 🧬 Soy ${name}.Acabo de terminar mi análisis de salud en la web y me urge empezar.\n\n📌 * RESUMEN DE MI DIAGNÓSTICO:*\n• * Meta:* ${waGoal}\n• * Estado:* ${waBadge}(Edad Real: ${realAgeNum} - Biol: ${bioAgeNum}) \n\n📦 * MI KIT RECOMENDADO:*\n${productList}\n\nCamila, necesito que me asesores para empezar con estos productos.Mi correo es ${email}.`;
 
     if (finalWaLink) {
       finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
