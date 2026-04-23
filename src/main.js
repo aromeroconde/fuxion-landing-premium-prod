@@ -444,7 +444,7 @@ async function generatePDFAttachment() {
       </div>
 
       <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #999;">
-        <span>FuXion Science Labs</span>
+        <span>FuXion Science Labs · v2.1</span>
         <span>Optimizando tu Rendimiento</span>
       </div>
     </div>`
