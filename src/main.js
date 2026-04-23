@@ -444,7 +444,7 @@ async function generatePDFAttachment() {
       </div>
 
       <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #999;">
-        <span>FuXion Science Labs · v2.1</span>
+        <span>FuXion Science Labs · v2.2</span>
         <span>Optimizando tu Rendimiento</span>
       </div>
     </div>`
@@ -518,7 +518,7 @@ async function generatePDFAttachment() {
       <meta charset="UTF-8">
       <style>
         ${rawStyle}
-        html { font-size: 18px; }
+        html { font-size: 22px; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
         .pdf-page {
           width: 8.5in;
