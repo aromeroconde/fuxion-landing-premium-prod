@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/gotenberg-api/:match*",
+            "destination": "https://advgotenberg.advancedhealth.com.co/:match*"
+        }
+    ]
+}

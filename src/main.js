@@ -535,10 +535,7 @@ async function generatePDFAttachment() {
     </html>
   `;
 
-  let gotenbergUrl = import.meta.env.VITE_GOTENBERG_URL || 'https://advgotenberg.advancedhealth.com.co';
-  if (import.meta.env.DEV) {
-    gotenbergUrl = '/gotenberg-api';
-  }
+  const gotenbergUrl = '/gotenberg-api';
   const basicAuthUser = import.meta.env.VITE_GOTENBERG_USERNAME;
   const basicAuthPass = import.meta.env.VITE_GOTENBERG_PASSWORD;
 
