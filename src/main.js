@@ -297,13 +297,13 @@ async function generatePDFAttachment() {
     // Page 1: COVER
     `<div class="pdf-page" style="padding: 0; background: #344a3e; color: white; display: flex; flex-direction: column; overflow: hidden; position: relative;">
       <img src="pdf_cover.png" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0.4;">
-      <div style="position: relative; z-index: 2; padding: 40mm 25mm; flex: 1; display: flex; flex-direction: column; justify-content: center;">
-        <div style="font-size: 14px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8;">Reporte Bio-Individual</div>
-        <h1 style="font-size: 64px; margin: 0; line-height: 1.1; font-weight: 800; letter-spacing: -1px;">El Camino a tu <br><span style="color: #c9e2d1;">Mejor Versión</span></h1>
-        <div style="width: 80px; height: 4px; background: #c9e2d1; margin: 40px 0;"></div>
-        <p style="font-size: 20px; opacity: 0.9; max-width: 80%; line-height: 1.6;">Análisis clínico detallado preparado exclusivamente para <strong>${userName}</strong>.</p>
+      <div style="position: relative; z-index: 2; padding: 15mm 10mm; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+        <div style="font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px; opacity: 0.8;">Reporte Bio-Individual</div>
+        <h1 style="font-size: 38px; margin: 0; line-height: 1.1; font-weight: 800; letter-spacing: -1px;">El Camino a tu <br><span style="color: #c9e2d1;">Mejor Versión</span></h1>
+        <div style="width: 60px; height: 4px; background: #c9e2d1; margin: 20px 0;"></div>
+        <p style="font-size: 16px; opacity: 0.9; max-width: 90%; line-height: 1.6;">Análisis clínico detallado preparado exclusivamente para <strong>${userName}</strong>.</p>
       </div>
-      <div style="position: relative; z-index: 2; padding: 25mm; background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center;">
+      <div style="position: relative; z-index: 2; padding: 10mm; background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Emisión</div>
           <div style="font-size: 16px; font-weight: bold;">${new Date().toLocaleDateString()}</div>
@@ -316,54 +316,54 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 2: CLINICAL DIAGNOSIS
-    `<div class="pdf-page" style="padding: 25mm; background: #fff; position: relative;">
-      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
+    `<div class="pdf-page" style="background: #fff;">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
         <div>
-          <h3 style="color: #344a3e; margin: 0; font-size: 15px; letter-spacing: 2px;">SECCIÓN 01</h3>
-          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 30px;">Diagnóstico Biológico</h2>
+          <h3 style="color: #344a3e; margin: 0; font-size: 13px; letter-spacing: 2px;">SECCIÓN 01</h3>
+          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 22px;">Diagnóstico Biológico</h2>
         </div>
-        <div style="background: #f0f7f2; padding: 15px 25px; border-radius: 15px; text-align: center; border: 1px solid #c9e2d1;">
-          <div style="font-size: 12px; color: #344a3e; text-transform: uppercase; letter-spacing: 1px;">Edad Biológica</div>
-          <div style="font-size: 32px; font-weight: 800; color: #344a3e;">${data.biologicalAge?.age || 'N/A'}</div>
-          <div style="font-size: 14px; font-weight: bold; color: #8c9b8a;">${data.biologicalAge?.badge || ''}</div>
+        <div style="background: #f0f7f2; padding: 10px 15px; border-radius: 12px; text-align: center; border: 1px solid #c9e2d1;">
+          <div style="font-size: 11px; color: #344a3e; text-transform: uppercase; letter-spacing: 1px;">Edad Biológica</div>
+          <div style="font-size: 26px; font-weight: 800; color: #344a3e;">${data.biologicalAge?.age || 'N/A'}</div>
+          <div style="font-size: 13px; font-weight: bold; color: #8c9b8a;">${data.biologicalAge?.badge || ''}</div>
         </div>
       </div>
 
-      <div style="margin-bottom: 40px;">
-        <h4 style="color: #344a3e; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 17px;">🔬 Análisis Metabólico Profundo</h4>
-        <div style="font-size: 15px; line-height: 1.8; color: #444; margin-top: 15px;">${ext.detailedAnalysis || data.metabolicAnalysis}</div>
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #344a3e; border-bottom: 1px solid #eee; padding-bottom: 8px; font-size: 15px;">🔬 Análisis Metabólico Profundo</h4>
+        <div style="font-size: 14px; line-height: 1.7; color: #444; margin-top: 10px;">${ext.detailedAnalysis || data.metabolicAnalysis}</div>
       </div>
 
-      <div style="margin-bottom: 40px; background: #fbfbfb; padding: 30px; border-radius: 20px;">
-        <h4 style="color: #344a3e; margin: 0 0 15px; font-size: 17px;">🧬 Fundamento Bioquímico</h4>
-        <div style="font-size: 15px; line-height: 1.8; color: #555;">${ext.biologicalDeepDive || data.bioExplanation}</div>
+      <div style="margin-bottom: 20px; background: #fbfbfb; padding: 15px; border-radius: 12px;">
+        <h4 style="color: #344a3e; margin: 0 0 10px; font-size: 15px;">🧬 Fundamento Bioquímico</h4>
+        <div style="font-size: 14px; line-height: 1.7; color: #555;">${ext.biologicalDeepDive || data.bioExplanation}</div>
       </div>
-      
-      <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #999;">
+
+      <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: space-between; font-size: 11px; color: #999;">
         <span>FuXion Science Labs</span>
         <span>${userName} - Reporte Confidencial</span>
       </div>
     </div>`,
 
     // Page 3: THE PHILOSOPHY
-    `<div class="pdf-page" style="padding: 0; background: #f8f9f8; position: relative; display: flex; flex-direction: column;">
-      <div style="height: 35%; position: relative; overflow: hidden;">
+    `<div class="pdf-page" style="background: #f8f9f8; padding: 0 !important;">
+      <div style="height: 200px; position: relative; overflow: hidden;">
         <img src="Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
         <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(0,0,0,0.4), transparent);"></div>
       </div>
-      <div style="padding: 25mm; flex: 1;">
-        <h2 style="color: #344a3e; font-size: 32px; margin-bottom: 20px;">Filosofía de Salud Plena</h2>
-        <p style="font-size: 15px; line-height: 1.8; color: #444;">
-          En FuXion, entendemos que la salud no es solo la ausencia de enfermedad, sino un estado de vitalidad óptima. 
-          Nuestra tecnología de <strong>Fusión Nutracéutica®</strong> combina los conocimientos de culturas ancestrales (Andinas, Amazónicas, Mesoamericanas y Asiáticas) 
+      <div style="padding: 10mm;">
+        <h2 style="color: #344a3e; font-size: 22px; margin-bottom: 12px;">Filosofía de Salud Plena</h2>
+        <p style="font-size: 14px; line-height: 1.7; color: #444;">
+          En FuXion, entendemos que la salud no es solo la ausencia de enfermedad, sino un estado de vitalidad óptima.
+          Nuestra tecnología de <strong>Fusión Nutracéutica®</strong> combina los conocimientos de culturas ancestrales (Andinas, Amazónicas, Mesoamericanas y Asiáticas)
           con los últimos avances científicos en biotecnología aplicada a la nutrición humana.
         </p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
-          <div style="background: white; border-radius: 12px; height: 180px; overflow: hidden;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+          <div style="background: white; border-radius: 12px; height: 130px; overflow: hidden;">
             <img src="Lab.png" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
-          <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
-            <div style="font-size: 24px; margin-bottom: 10px;">⚡</div>
+          <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+            <div style="font-size: 20px; margin-bottom: 8px;">⚡</div>
             <strong style="color: #344a3e;">Nutrición Celular</strong>
             <p style="font-size: 12px; color: #666; margin-top: 5px;">Activamos tu metabolismo con micro-nutrientes vivos.</p>
           </div>
@@ -372,78 +372,78 @@ async function generatePDFAttachment() {
     </div>`,
 
     // Page 4: ROADMAP
-    `<div class="pdf-page" style="padding: 0; background: #fff; position: relative; display: flex; flex-direction: column;">
-      <div style="height: 30%; position: relative; overflow: hidden;">
+    `<div class="pdf-page" style="background: #fff; padding: 0 !important;">
+      <div style="height: 160px; position: relative; overflow: hidden;">
         <img src="cocina.png" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(52, 74, 62, 0.4), transparent);"></div>
-        <div style="position: absolute; bottom: 15px; left: 25mm; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-          <h3 style="margin: 0; font-size: 12px; letter-spacing: 2px;">SECCIÓN 02</h3>
-          <h2 style="margin: 5px 0 0; font-size: 24px;">Tu Hoja de Ruta Diaria</h2>
+        <div style="position: absolute; bottom: 12px; left: 10mm; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+          <h3 style="margin: 0; font-size: 11px; letter-spacing: 2px;">SECCIÓN 02</h3>
+          <h2 style="margin: 4px 0 0; font-size: 20px;">Tu Hoja de Ruta Diaria</h2>
         </div>
       </div>
 
-      <div style="padding: 10mm 25mm; flex: 1;">
-        <div style="position: relative; border-left: 2px solid #8c9b8a; padding-left: 30px; margin-left: 10px;">
-          <div style="margin-bottom: 25px;">
-            <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
-            <strong style="color: #344a3e; font-size: 16px; text-transform: uppercase;">🌅 Amanecer Vital</strong>
-            <p style="font-size: 15px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine?.morning}</p>
+      <div style="padding: 5mm 10mm;">
+        <div style="position: relative; border-left: 2px solid #8c9b8a; padding-left: 18px; margin-left: 6px;">
+          <div style="margin-bottom: 15px;">
+            <div style="position: absolute; left: -6px; width: 11px; height: 11px; background: #344a3e; border-radius: 50%;"></div>
+            <strong style="color: #344a3e; font-size: 14px; text-transform: uppercase;">🌅 Amanecer Vital</strong>
+            <p style="font-size: 13px; color: #555; margin: 5px 0 0; line-height: 1.6;">${data.routine?.morning}</p>
           </div>
-          <div style="margin-bottom: 25px;">
-            <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
-            <strong style="color: #344a3e; font-size: 16px; text-transform: uppercase;">🌆 Energía de Tarde</strong>
-            <p style="font-size: 15px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine?.afternoon}</p>
+          <div style="margin-bottom: 15px;">
+            <div style="position: absolute; left: -6px; width: 11px; height: 11px; background: #344a3e; border-radius: 50%;"></div>
+            <strong style="color: #344a3e; font-size: 14px; text-transform: uppercase;">🌆 Energía de Tarde</strong>
+            <p style="font-size: 13px; color: #555; margin: 5px 0 0; line-height: 1.6;">${data.routine?.afternoon}</p>
           </div>
           <div style="margin-bottom: 0;">
-            <div style="position: absolute; left: -8px; width: 14px; height: 14px; background: #344a3e; border-radius: 50%;"></div>
-            <strong style="color: #344a3e; font-size: 16px; text-transform: uppercase;">🌙 Regeneración Nocturna</strong>
-            <p style="font-size: 15px; color: #555; margin: 8px 0 0; line-height: 1.6;">${data.routine?.night}</p>
+            <div style="position: absolute; left: -6px; width: 11px; height: 11px; background: #344a3e; border-radius: 50%;"></div>
+            <strong style="color: #344a3e; font-size: 14px; text-transform: uppercase;">🌙 Regeneración Nocturna</strong>
+            <p style="font-size: 13px; color: #555; margin: 5px 0 0; line-height: 1.6;">${data.routine?.night}</p>
           </div>
         </div>
 
-        <div style="margin-top: 35px; padding: 25px; background: #f0f7f2; border-radius: 15px; border-left: 5px solid #344a3e;">
-          <h4 style="margin: 0 0 10px; color: #344a3e; font-size: 17px;">💡 Recomendaciones de Estilo de Vida</h4>
-          <p style="font-size: 15px; line-height: 1.6; color: #444; margin: 0;">${ext.lifestyleRecommendations || 'Prioriza el descanso de 7-8 horas y una hidratación constante durante el día.'}</p>
+        <div style="margin-top: 18px; padding: 12px; background: #f0f7f2; border-radius: 12px; border-left: 4px solid #344a3e;">
+          <h4 style="margin: 0 0 6px; color: #344a3e; font-size: 14px;">💡 Recomendaciones de Estilo de Vida</h4>
+          <p style="font-size: 13px; line-height: 1.6; color: #444; margin: 0;">${ext.lifestyleRecommendations || 'Prioriza el descanso de 7-8 horas y una hidratación constante durante el día.'}</p>
         </div>
       </div>
     </div>`,
 
     // Page 5: NUTRITION & EXERCISE
-    `<div class="pdf-page" style="padding: 25mm; background: #fff; position: relative;">
-      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
+    `<div class="pdf-page" style="background: #fff;">
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
         <div>
-          <h3 style="color: #344a3e; margin: 0; font-size: 15px; letter-spacing: 2px;">SECCIÓN 03</h3>
-          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 30px;">Bio-Hacking: Nutrición y Ejercicio</h2>
+          <h3 style="color: #344a3e; margin: 0; font-size: 13px; letter-spacing: 2px;">SECCIÓN 03</h3>
+          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 22px;">Bio-Hacking: Nutrición y Ejercicio</h2>
         </div>
       </div>
 
       <!-- Nutrition Section -->
-      <div style="margin-bottom: 35px;">
-        <h4 style="color: #344a3e; border-bottom: 2px solid #c9e2d1; padding-bottom: 10px; font-size: 18px; margin-bottom: 20px;">🥗 Hacks Nutricionales</h4>
-        <div style="display: flex; flex-direction: column; gap: 15px;">
+      <div style="margin-bottom: 18px;">
+        <h4 style="color: #344a3e; border-bottom: 2px solid #c9e2d1; padding-bottom: 8px; font-size: 15px; margin-bottom: 12px;">🥗 Hacks Nutricionales</h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
           ${ext.nutritionTips ? ext.nutritionTips.map(tip => `
-            <div style="background: #fcfdfc; padding: 20px; border-radius: 12px; border-left: 4px solid #d4af37; box-shadow: 0 3px 10px rgba(0,0,0,0.02);">
-              <strong style="color: #344a3e; font-size: 16px; display: block; margin-bottom: 5px;">${tip.title}</strong>
-              <p style="font-size: 14px; color: #555; margin: 0; line-height: 1.6;">${tip.description}</p>
+            <div style="background: #fcfdfc; padding: 12px; border-radius: 10px; border-left: 4px solid #d4af37;">
+              <strong style="color: #344a3e; font-size: 14px; display: block; margin-bottom: 4px;">${tip.title}</strong>
+              <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.5;">${tip.description}</p>
             </div>
-          `).join('') : '<p style="font-size: 14px; color: #555;">Sigue las recomendaciones nutricionales de tu asesor.</p>'}
+          `).join('') : '<p style="font-size: 13px; color: #555;">Sigue las recomendaciones nutricionales de tu asesor.</p>'}
         </div>
       </div>
 
       <!-- Exercise Section -->
-      <div style="margin-bottom: 30px;">
-        <h4 style="color: #344a3e; border-bottom: 2px solid #c9e2d1; padding-bottom: 10px; font-size: 18px; margin-bottom: 20px;">⚡ Movimiento Estratégico</h4>
-        <div style="display: flex; flex-direction: column; gap: 15px;">
+      <div style="margin-bottom: 15px;">
+        <h4 style="color: #344a3e; border-bottom: 2px solid #c9e2d1; padding-bottom: 8px; font-size: 15px; margin-bottom: 12px;">⚡ Movimiento Estratégico</h4>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
           ${ext.exerciseTips ? ext.exerciseTips.map(tip => `
-            <div style="background: #f0f7f2; padding: 20px; border-radius: 12px; border-left: 4px solid #8c9b8a; box-shadow: 0 3px 10px rgba(0,0,0,0.02);">
-              <strong style="color: #344a3e; font-size: 16px; display: block; margin-bottom: 5px;">${tip.title}</strong>
-              <p style="font-size: 14px; color: #555; margin: 0; line-height: 1.6;">${tip.description}</p>
+            <div style="background: #f0f7f2; padding: 12px; border-radius: 10px; border-left: 4px solid #8c9b8a;">
+              <strong style="color: #344a3e; font-size: 14px; display: block; margin-bottom: 4px;">${tip.title}</strong>
+              <p style="font-size: 13px; color: #555; margin: 0; line-height: 1.5;">${tip.description}</p>
             </div>
-          `).join('') : '<p style="font-size: 14px; color: #555;">Inicia con 30 minutos de actividad cardiovascular diaria.</p>'}
+          `).join('') : '<p style="font-size: 13px; color: #555;">Inicia con 30 minutos de actividad cardiovascular diaria.</p>'}
         </div>
       </div>
 
-      <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #999;">
+      <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: space-between; font-size: 11px; color: #999;">
         <span>FuXion Science Labs · v2.2</span>
         <span>Optimizando tu Rendimiento</span>
       </div>
@@ -453,26 +453,26 @@ async function generatePDFAttachment() {
   // Dynamically add Product Pages (Section 04)
   productChunks.forEach((chunk, pageIdx) => {
     finalPages.push(`
-    <div class="pdf-page" style="padding: 25mm; background: #f8f9f8; position: relative;">
-        <div style="margin-bottom: 35px; border-bottom: 2px solid #344a3e; padding-bottom: 20px;">
-          <h3 style="color: #344a3e; margin: 0; font-size: 14px; letter-spacing: 2px;">SECCIÓN 04 ${productChunks.length > 1 ? `(Pág. ${pageIdx + 1})` : ''}</h3>
-          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 28px;">Tu Kit Nutracéutico Sugerido</h2>
+    <div class="pdf-page" style="background: #f8f9f8;">
+        <div style="margin-bottom: 15px; border-bottom: 2px solid #344a3e; padding-bottom: 12px;">
+          <h3 style="color: #344a3e; margin: 0; font-size: 12px; letter-spacing: 2px;">SECCIÓN 04 ${productChunks.length > 1 ? `(Pág. ${pageIdx + 1})` : ''}</h3>
+          <h2 style="color: #344a3e; margin: 5px 0 0; font-size: 22px;">Tu Kit Nutracéutico Sugerido</h2>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
           ${chunk.map((p) => `
-            <div style="background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
-              <div style="position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: #344a3e;"></div>
-              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                <strong style="color: #344a3e; font-size: 22px;">${p.name}</strong>
-                <span style="font-size: 12px; color: #8c9b8a; font-weight: bold; text-transform: uppercase;">Aliado Principal</span>
+            <div style="background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+              <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #344a3e;"></div>
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <strong style="color: #344a3e; font-size: 18px;">${p.name}</strong>
+                <span style="font-size: 11px; color: #8c9b8a; font-weight: bold; text-transform: uppercase;">Aliado Principal</span>
               </div>
-              <p style="font-size: 14px; color: #555; margin: 0 0 15px; line-height: 1.6;">${p.fullDescription || p.benefit}</p>
-              <div style="background: #f0f7f2; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
-                 <span style="font-size: 18px;">🔔</span>
+              <p style="font-size: 13px; color: #555; margin: 0 0 10px; line-height: 1.5;">${p.fullDescription || p.benefit}</p>
+              <div style="background: #f0f7f2; padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+                 <span style="font-size: 16px;">🔔</span>
                  <div>
-                   <strong style="font-size: 12px; color: #344a3e;">PROTOCOLO DE USO</strong>
-                   <p style="font-size: 13px; color: #444; margin: 0;">${p.howToUse || 'Consultar guía de empaque.'}</p>
+                   <strong style="font-size: 11px; color: #344a3e;">PROTOCOLO DE USO</strong>
+                   <p style="font-size: 12px; color: #444; margin: 0;">${p.howToUse || 'Consultar guía de empaque.'}</p>
                  </div>
               </div>
             </div>
@@ -480,12 +480,12 @@ async function generatePDFAttachment() {
         </div>
 
         ${pageIdx === productChunks.length - 1 ? `
-          <div style="position: absolute; bottom: 25mm; left: 25mm; right: 25mm; text-align: center;">
-            <div style="width: 60px; height: 3px; background: #344a3e; margin: 0 auto 20px;"></div>
-            <p style="font-size: 11px; color: #8c9b8a; line-height: 1.5; margin-bottom: 5px;">
+          <div style="margin-top: 20px; text-align: center;">
+            <div style="width: 40px; height: 3px; background: #344a3e; margin: 0 auto 10px;"></div>
+            <p style="font-size: 10px; color: #8c9b8a; line-height: 1.5; margin-bottom: 5px;">
               Este reporte es informativo y no pretende diagnosticar, tratar o curar enfermedades. Ante cualquier condición médica, consulte a su médico.
             </p>
-            <p style="font-size: 11px; color: #8c9b8a; line-height: 1.5; margin-bottom: 15px;">
+            <p style="font-size: 10px; color: #8c9b8a; line-height: 1.5; margin-bottom: 10px;">
               La nutrición avanzada es un complemento de un estilo de vida saludable.
             </p>
             <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
@@ -494,12 +494,8 @@ async function generatePDFAttachment() {
               <span style="font-size: 14px; color: #344a3e; font-weight: bold; letter-spacing: 3px;">Advanced Health</span>
             </div>
           </div>
-        ` : `
-          <div style="position: absolute; bottom: 25mm; right: 25mm; font-size: 12px; color: #8c9b8a;">
-            Continúa en la siguiente página →
-          </div>
-        `}
-      </div >
+        ` : ''}
+      </div>
     `);
   });
 
@@ -518,20 +514,18 @@ async function generatePDFAttachment() {
       <meta charset="UTF-8">
       <style>
         ${rawStyle}
-        html { font-size: 22px; }
+        @page { margin: 0; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
         .pdf-page {
-          width: 8.5in;
-          height: 11in;
+          width: 4.5in;
           box-sizing: border-box;
-          page-break-after: always;
-          overflow: hidden;
           background: #fff;
+          padding: 20px 25px 40px 25px;
         }
       </style>
     </head>
     <body>
-      ${finalPages.join('')}
+      ${finalPages.join('<div style="height: 1px; background: #e0e8e4; margin: 0 25px;"></div>')}
     </body>
     </html>
   `;
@@ -561,8 +555,27 @@ async function generatePDFAttachment() {
     console.error('Error fetching images for PDF:', err);
   }
 
-  formData.append('paperWidth', '8.5');
-  formData.append('paperHeight', '11');
+  // Medir altura real del contenido para evitar espacio en blanco al final
+  const measureContainer = document.createElement('div');
+  measureContainer.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:4.32in;visibility:hidden;';
+  const styleEl = document.createElement('style');
+  styleEl.textContent = rawStyle + `
+    .pdf-page { width: 4.32in; box-sizing: border-box; padding: 20px 25px 40px 25px; }
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+  `;
+  measureContainer.appendChild(styleEl);
+  const contentDiv = document.createElement('div');
+  contentDiv.innerHTML = finalPages.join('<div style="height:1px;background:#e0e8e4;margin:0 25px;"></div>');
+  measureContainer.appendChild(contentDiv);
+  document.body.appendChild(measureContainer);
+  await new Promise(r => setTimeout(r, 100));
+  const heightPx = measureContainer.scrollHeight;
+  document.body.removeChild(measureContainer);
+  // Gotenberg renderiza a mayor DPI que el navegador, multiplicamos por 1.4 y añadimos 3in de buffer
+  const paperHeight = ((heightPx / 96) * 1.4 + 3).toFixed(2);
+
+  formData.append('paperWidth', '4.5');
+  formData.append('paperHeight', paperHeight);
   formData.append('marginTop', '0');
   formData.append('marginBottom', '0');
   formData.append('marginLeft', '0');
