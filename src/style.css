@@ -519,20 +519,59 @@ code {
 }
 
 @media (max-width: 600px) {
+  /* Modal ocupa pantalla completa sin márgenes */
+  #report-modal {
+    padding: 0 !important;
+  }
+
   .report-dashboard {
-    margin: 0;
-    min-height: 100%;
-    border-radius: 0;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  .report-hero h2 {
-    font-size: 1.5rem;
+  /* Hero más compacto */
+  .report-hero {
+    padding: 1.75rem 1.25rem !important;
   }
 
+  .report-hero h2 {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Tabs con texto reducido */
+  .report-tabs button {
+    padding: 0.875rem 0.25rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Body del modal con menos padding */
   .report-body {
-    padding: 1.5rem;
+    padding: 1.25rem !important;
+  }
+
+  /* Lead capture con padding ajustado */
+  #lead-capture-container {
+    padding: 1.25rem !important;
+  }
+
+  /* Routine timeline más compacto */
+  .routine-timeline {
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+  }
+
+  .time-marker {
+    margin-left: -1.75rem;
+  }
+
+  /* Productos en columna única */
+  .products-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
   }
 }
 

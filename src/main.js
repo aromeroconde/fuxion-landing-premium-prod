@@ -115,9 +115,8 @@ async function openChat(goalTitle) {
        - Alimentación e Hidratación.
        - Actividad física / Sedentarismo.
        - Estrés y estado emocional.
-    4. IMPORTANTE: Antes de terminar, cuando ya tengas los datos de salud, PREGUNTA EL NOMBRE del usuario para "guardar su progreso y personalizar su hoja de ruta".
-    5. CUANDO TENGAS EL NOMBRE Y LA INFO, dile de forma natural que vas a analizar sus datos para crear su reporte.
-    6. AL FINAL DE ESE ÚLTIMO MENSAJE, escribe EXACTAMENTE: [REPORT_READY].
+    4. CUANDO TENGAS TODA LA INFO, dile de forma natural que vas a analizar sus datos para crear su reporte personalizado.
+    5. AL FINAL DE ESE ÚLTIMO MENSAJE, escribe EXACTAMENTE: [REPORT_READY].
   `;
 
   chatSession = model.startChat({
@@ -155,8 +154,6 @@ async function handleUserInput() {
       const cleanText = text.replace('[REPORT_READY]', '').trim();
       if (cleanText) addMessage(cleanText, true);
 
-      // Intentar extraer el nombre del historial (heurística simple o pedirlo específicamente)
-      extractUserName();
       extractUserAge();
       generateReport();
     } else {
@@ -249,30 +246,21 @@ async function generateReport() {
     const data = JSON.parse(cleanText);
     currentReportData = data;
 
-    // Populate Modal
-    reportAgeBadge.innerHTML = `<span>Plan de Transformación para: ${userName}</span>`;
-    document.getElementById('report-title').textContent = `Reporte de Bienestar para ${userName}`;
+    // Mostrar el modal solo con el formulario; el resumen se revela tras el envío
+    document.getElementById('report-title').textContent = '¡Tu Análisis está Listo!';
+    reportAgeBadge.innerHTML = '<span>Ingresa tus datos para ver tu Plan Personalizado</span>';
 
-    reportAgeBadge.innerHTML = `<span>Edad Biológica: ${data.biologicalAge.age}</span> • <strong>${data.biologicalAge.badge}</strong>`;
-    reportMetabolic.textContent = data.metabolicAnalysis;
-    reportBioExplanation.textContent = data.bioExplanation;
-    routineMorning.textContent = data.routine.morning;
-    routineAfternoon.textContent = data.routine.afternoon;
-    routineNight.textContent = data.routine.night;
+    const leadFormIntro = leadFormContent.querySelector('p');
+    if (leadFormIntro) {
+      leadFormIntro.innerHTML = 'Ingresa tus datos para <strong>ver tu Plan de Transformación</strong> y recibir una copia por email.';
+    }
 
-    reportProductsContainer.innerHTML = data.products.map(p => `
-      <div class="pr-card">
-        <h5>${p.name}</h5>
-        <p>${p.benefit}</p>
-        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20${p.name}%20como%20parte%20de%20mi%20plan%20con%20Camila." target="_blank" class="btn btn-primary btn-sm">${p.cta}</a>
-      </div>
-    `).join('');
+    document.querySelector('.report-tabs').style.display = 'none';
+    document.querySelector('.report-body').style.display = 'none';
 
-    // Reset Form
     leadFormContent.style.display = 'block';
     leadSuccess.style.display = 'none';
 
-    // Show Report Modal
     chatModal.style.display = 'none';
     reportModal.style.display = 'block';
 
@@ -280,6 +268,30 @@ async function generateReport() {
     console.error('Report Generation Error:', error);
     addMessage('Hubo un problema al generar el tablero visual. Por favor, hablemos por WhatsApp para darte los resultados.', true);
   }
+}
+
+function populateReportModal(data) {
+  document.getElementById('report-title').textContent = `Reporte de Bienestar para ${userName}`;
+  reportAgeBadge.innerHTML = `<span>Edad Biológica: ${data.biologicalAge.age}</span> • <strong>${data.biologicalAge.badge}</strong>`;
+  reportMetabolic.textContent = data.metabolicAnalysis;
+  reportBioExplanation.textContent = data.bioExplanation;
+  routineMorning.textContent = data.routine.morning;
+  routineAfternoon.textContent = data.routine.afternoon;
+  routineNight.textContent = data.routine.night;
+
+  const ext = data.pdfExtendedData || {};
+  const products = (ext.productsExtended?.length > 0) ? ext.productsExtended : data.products || [];
+
+  reportProductsContainer.innerHTML = products.map(p => `
+    <div class="pr-card">
+      <h5>${p.name}</h5>
+      <p>${p.fullDescription || p.benefit}</p>
+      <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Hola!%20Quiero%20comprar%20${p.name}%20como%20parte%20de%20mi%20plan%20con%20Camila." target="_blank" class="btn btn-primary btn-sm">${p.cta || 'Comprar ahora'}</a>
+    </div>
+  `).join('');
+
+  document.querySelector('.report-tabs').style.display = 'flex';
+  document.querySelector('.report-body').style.display = 'block';
 }
 
 async function generatePDFAttachment() {
@@ -753,7 +765,8 @@ async function saveLead(e) {
       finalWaLink.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
     }
 
-    // Mostrar Pantalla de Éxito
+    // Revelar el resumen y mostrar el botón de descarga
+    populateReportModal(currentReportData);
     leadFormContent.style.display = 'none';
     leadSuccess.style.display = 'block';
 
