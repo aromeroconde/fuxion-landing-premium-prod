@@ -1,8 +1,8 @@
 import './style.css'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { createClient } from '@supabase/supabase-js'
-
 import emailjs from '@emailjs/browser'
+import knowledge from './knowledge.json'
 
 // --- Supabase Config ---
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -62,7 +62,7 @@ let isGeneratingReport = false;
 let currentReportData = null;
 let userName = 'Usuario';
 
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '573007044302';
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || knowledge.whatsapp_fallback;
 
 function addMessage(text, isBot = true, isHTML = false) {
   const msgDiv = document.createElement('div')
@@ -196,10 +196,20 @@ async function generateReport() {
       IMPORTANTE: Los productos FuXion recomendados DEBEN incluirse dentro de los pasos de la "routine".
       SOLO RESPONDE CON EL JSON.
 
-      REGLAS DURAS DE RECOMENDACIÓN (SÍGUELAS ESTRICTAMENTE):
-      - Si el usuario tiene HIPERTENSIÓN o CARDIOPATÍA: NO RECOMENDAR "Vita Xtra T+" ni "Termo T3".
-      - Si la usuaria está EMBARAZADA o en periodo de LACTANCIA: NO RECOMENDAR "Café" (ninguno), ni "Vita Xtra T+", ni "Termo T3".
-      - Solo recomendar productos adecuados según su perfil de salud reportado.
+      CONTRAINDICACIONES ABSOLUTAS:
+      ${Object.entries(knowledge.productos)
+        .filter(([, d]) => d.contraindicado_en.length > 0)
+        .map(([nombre, d]) => `- NO recomendar "${nombre}" si el usuario tiene: ${d.contraindicado_en.join(', ')}.`)
+        .join('\n      ')}
+
+      MAPEO DE SÍNTOMAS A PRODUCTOS:
+      ${Object.entries(knowledge.productos)
+        .filter(([, d]) => d.sintomas.length > 0)
+        .map(([nombre, d]) => `- ${d.sintomas.join(', ')} → "${nombre}"`)
+        .join('\n      ')}
+
+      INSTRUCCIONES ADICIONALES:
+      ${knowledge.reglas_adicionales.map(r => `- ${r}`).join('\n      ')}
 
       {
         "biologicalAge": { "age": "X años", "badge": "Nivel Óptimo/Alerta", "explanation": "..." },
@@ -293,6 +303,22 @@ function populateReportModal(data) {
   document.querySelector('.report-tabs').style.display = 'flex';
   document.querySelector('.report-body').style.display = 'block';
 }
+
+const compressImage = (blob, maxWidth = 900, quality = 0.75) => new Promise(resolve => {
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    const scale = Math.min(1, maxWidth / img.naturalWidth);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(compressed => resolve(compressed || blob), 'image/jpeg', quality);
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); resolve(blob); };
+  img.src = url;
+});
 
 async function generatePDFAttachment() {
   const data = currentReportData;
@@ -560,9 +586,9 @@ async function generatePDFAttachment() {
       fetch('/images/Lab.png'),
       fetch('/images/cocina.png')
     ]);
-    if (coverRes.ok) formData.append('files', await coverRes.blob(), 'pdf_cover.png');
-    if (labRes.ok) formData.append('files', await labRes.blob(), 'Lab.png');
-    if (cocinaRes.ok) formData.append('files', await cocinaRes.blob(), 'cocina.png');
+    if (coverRes.ok) formData.append('files', await compressImage(await coverRes.blob()), 'pdf_cover.png');
+    if (labRes.ok) formData.append('files', await compressImage(await labRes.blob()), 'Lab.png');
+    if (cocinaRes.ok) formData.append('files', await compressImage(await cocinaRes.blob()), 'cocina.png');
   } catch (err) {
     console.error('Error fetching images for PDF:', err);
   }
@@ -594,18 +620,41 @@ async function generatePDFAttachment() {
   formData.append('marginRight', '0');
   formData.append('printBackground', 'true');
 
-  const res = await fetch(`${gotenbergUrl}/forms/chromium/convert/html`, {
-    method: 'POST',
-    headers,
-    body: formData
-  });
-
-  if (!res.ok) {
-    console.error('Gotenberg API error', await res.text());
-    throw new Error('No se pudo generar el reporte premium con Gotenberg.');
+  const MAX_ATTEMPTS = 3;
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120_000);
+    try {
+      const res = await fetch(`${gotenbergUrl}/forms/chromium/convert/html`, {
+        method: 'POST', headers, body: formData, signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => '(sin detalle)');
+        const msg = `Gotenberg HTTP ${res.status}: ${errBody}`;
+        console.error(`[PDF] Intento ${attempt}/${MAX_ATTEMPTS} fallido —`, msg);
+        lastError = new Error(msg);
+        if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 2000 * attempt));
+        continue;
+      }
+      const pdfBlob = await res.blob();
+      if (!pdfBlob || pdfBlob.size < 100) {
+        lastError = new Error('Gotenberg devolvió un PDF vacío.');
+        if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 2000 * attempt));
+        continue;
+      }
+      return pdfBlob;
+    } catch (fetchErr) {
+      clearTimeout(timeoutId);
+      const msg = fetchErr.name === 'AbortError'
+        ? 'Timeout: Gotenberg tardó más de 120 segundos.'
+        : fetchErr.message;
+      lastError = new Error(msg);
+      if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 2000 * attempt));
+    }
   }
-
-  return await res.blob();
+  throw lastError || new Error('No se pudo generar el PDF tras 3 intentos.');
 }
 
 async function downloadPDF() {
@@ -651,7 +700,7 @@ async function downloadPDF() {
 
   } catch (error) {
     console.error('Error generating PDF:', error);
-    alert('Hubo un error al generar el PDF. Por favor, intenta de nuevo.');
+    alert(`Hubo un error al generar el PDF: ${error.message}. Por favor, intenta de nuevo.`);
     btns.forEach(btn => {
       btn.disabled = false;
       btn.innerHTML = btn.dataset.originalText || '📄 Descargar Versión PDF';
@@ -703,6 +752,7 @@ async function saveLead(e) {
   try {
     // --- 1. Generar y Subir PDF Primero ---
     let pdfUrl = null;
+    let pdfFailed = false;
     try {
       console.log('--- Iniciando Procesamiento de PDF ---');
       submitBtn.textContent = 'Personalizando tu Plan... ⏳';
@@ -712,7 +762,8 @@ async function saveLead(e) {
       submitBtn.textContent = 'Guardando en la Nube... ☁️';
       pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
     } catch (pdfErr) {
-      console.error('Error crítico procesando PDF:', pdfErr);
+      console.error('[PDF] Error generando/subiendo PDF:', pdfErr.message);
+      pdfFailed = true;
     }
 
     // Guardar para el botón de descarga instantánea en la UI de éxito
@@ -769,6 +820,10 @@ async function saveLead(e) {
     populateReportModal(currentReportData);
     leadFormContent.style.display = 'none';
     leadSuccess.style.display = 'block';
+    if (pdfFailed) {
+      const pdfWarning = document.getElementById('pdf-warning');
+      if (pdfWarning) pdfWarning.style.display = 'block';
+    }
 
   } catch (error) {
     console.error('Error saving lead:', error);
@@ -795,7 +850,8 @@ async function sendLeadEmails(leadData, pdfUrl) {
       lead_goal: leadData.goal,
       biological_age: leadData.biological_age,
       metabolic_analysis: leadData.report_data?.metabolicAnalysis?.substring(0, 500),
-      pdf_url: pdfUrl // Link to the PDF in Supabase Storage
+      pdf_url: pdfUrl || 'PDF no disponible (error al generar)',
+      has_pdf: pdfUrl ? 'Sí' : 'No - el PDF no se pudo generar en esta sesión'
     });
 
     // 2. Reporte al Cliente

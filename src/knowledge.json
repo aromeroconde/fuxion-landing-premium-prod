@@ -1,0 +1,105 @@
+{
+  "whatsapp_fallback": "573007044302",
+
+  "productos": {
+    "Vita Xtra T+": {
+      "sintomas": ["falta de energía", "pereza", "desgano", "cansancio crónico"],
+      "contraindicado_en": ["hipertensión", "cardiopatía"]
+    },
+    "Termo T3": {
+      "sintomas": ["sobrepeso", "metabolismo lento", "quemar grasa"],
+      "contraindicado_en": ["hipertensión", "cardiopatía", "embarazo", "lactancia"]
+    },
+    "NoCarb T": {
+      "sintomas": ["consumo excesivo de carbohidratos", "picos de glucosa", "antojos de dulce"],
+      "contraindicado_en": []
+    },
+    "Biopro+ Fit": {
+      "sintomas": ["mejorar masa muscular", "bajar de peso", "pérdida de músculo", "tonificación"],
+      "contraindicado_en": []
+    },
+    "Prunex 1": {
+      "sintomas": ["estreñimiento severo", "colon lento", "limpieza intestinal"],
+      "contraindicado_en": []
+    },
+    "Flora Liv": {
+      "sintomas": ["gastritis", "helicobacter", "colon inflamado", "estreñimiento", "gases", "mal aliento", "distensión abdominal", "inflamación intestinal", "intestino permeable"],
+      "contraindicado_en": []
+    },
+    "Café Fit": {
+      "sintomas": ["energía matutina", "metabolismo", "antioxidante"],
+      "contraindicado_en": ["embarazo", "lactancia"]
+    },
+    "Cool Age": {
+      "sintomas": ["menopausia", "sofocos", "cambios hormonales", "calores"],
+      "contraindicado_en": []
+    },
+    "HGH": {
+      "sintomas": ["rejuvenecer a nivel celular", "mejorar circulación", "sueño reparador", "antienvejecimiento", "regeneración celular"],
+      "contraindicado_en": []
+    },
+    "Passion": {
+      "sintomas": ["líbido bajo", "deseo sexual reducido", "migrañas", "falta de energía"],
+      "contraindicado_en": []
+    },
+    "Berry Balance": {
+      "sintomas": ["antioxidante", "sistema inmune", "envejecimiento celular"],
+      "contraindicado_en": []
+    },
+    "Probix": {
+      "sintomas": ["grasa visceral", "bajar barriga", "grasa abdominal", "microbiota"],
+      "contraindicado_en": []
+    },
+    "Golden Flx": {
+      "sintomas": ["artrosis", "artritis", "dolor articular", "inflamación de articulaciones"],
+      "contraindicado_en": []
+    },
+    "Off": {
+      "sintomas": ["insomnio", "sueño intermitente", "dificultad para dormir", "ansiedad", "depresión", "nervios", "estrés crónico"],
+      "contraindicado_en": []
+    },
+    "Biopro+ Sport": {
+      "sintomas": ["rendimiento deportivo", "recuperación muscular", "deportista de alto rendimiento"],
+      "contraindicado_en": []
+    },
+    "Gano Capuccino": {
+      "sintomas": ["energía", "adaptógeno", "bienestar general"],
+      "contraindicado_en": ["embarazo", "lactancia"]
+    },
+    "Rexet": {
+      "sintomas": ["hígado graso", "hígado agrandado", "mal aliento por hígado", "exceso de alcohol", "detox hepático"],
+      "contraindicado_en": []
+    },
+    "Vera+": {
+      "sintomas": ["piel seca", "cicatrización", "salud de piel"],
+      "contraindicado_en": []
+    },
+    "Probal": {
+      "sintomas": ["próstata", "retención de líquidos", "vías urinarias"],
+      "contraindicado_en": []
+    },
+    "Alpha Balance": {
+      "sintomas": ["colesterol alto", "triglicéridos", "salud cardiovascular"],
+      "contraindicado_en": []
+    },
+    "Chocolate Fit": {
+      "sintomas": ["sustituto de comida", "control de peso", "antojos de chocolate"],
+      "contraindicado_en": []
+    },
+    "Biopro+ Tech": {
+      "sintomas": ["mejorar masa muscular", "factor de transferencia", "vitamina D", "fortalecer sistema inmune", "defensas bajas"],
+      "contraindicado_en": []
+    },
+    "Liquid Fiber": {
+      "sintomas": ["fibra dietética", "saciedad", "tránsito intestinal lento"],
+      "contraindicado_en": []
+    }
+  },
+
+  "reglas_adicionales": [
+    "Si el usuario menciona varios síntomas de distintas categorías, elige los 3 productos que cubran las necesidades más urgentes o frecuentes.",
+    "Los productos recomendados DEBEN incluirse dentro de los pasos de la rutina diaria.",
+    "El listado 'products' y 'productsExtended' DEBEN tener exactamente los mismos 3 productos.",
+    "Solo recomendar a personas de 15 años o más."
+  ]
+}
