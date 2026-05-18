@@ -624,7 +624,7 @@ async function generatePDFAttachment() {
   let lastError;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120_000);
+    const timeoutId = setTimeout(() => controller.abort(), 60_000);
     try {
       const res = await fetch(`${gotenbergUrl}/forms/chromium/convert/html`, {
         method: 'POST', headers, body: formData, signal: controller.signal
@@ -648,7 +648,7 @@ async function generatePDFAttachment() {
     } catch (fetchErr) {
       clearTimeout(timeoutId);
       const msg = fetchErr.name === 'AbortError'
-        ? 'Timeout: Gotenberg tardó más de 120 segundos.'
+        ? 'Timeout: Gotenberg tardó más de 60 segundos.'
         : fetchErr.message;
       lastError = new Error(msg);
       if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 2000 * attempt));
