@@ -654,7 +654,9 @@ async function generatePDFAttachment() {
       if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 2000 * attempt));
     }
   }
-  throw lastError || new Error('No se pudo generar el PDF tras 3 intentos.');
+  const finalErr = lastError || new Error('No se pudo generar el PDF tras 3 intentos.');
+  if (!finalErr.stage) finalErr.stage = 'gotenberg';
+  throw finalErr;
 }
 
 async function downloadPDF() {
@@ -764,6 +766,11 @@ async function saveLead(e) {
     } catch (pdfErr) {
       console.error('[PDF] Error generando/subiendo PDF:', pdfErr.message);
       pdfFailed = true;
+      logPdfError(
+        pdfErr.stage || 'unknown',
+        pdfErr.message,
+        { name, email, phone, goal: currentGoal }
+      );
     }
 
     // Guardar para el botón de descarga instantánea en la UI de éxito
@@ -875,6 +882,31 @@ async function sendLeadEmails(leadData, pdfUrl) {
   }
 }
 
+async function logPdfError(stage, message, leadInfo = {}) {
+  try {
+    await fetch(`${supabaseUrl}/rest/v1/pdf_errors`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        lead_name: leadInfo.name || null,
+        lead_email: leadInfo.email || null,
+        lead_phone: leadInfo.phone || null,
+        goal: leadInfo.goal || null,
+        stage,
+        error_message: String(message || '').substring(0, 2000),
+        user_agent: navigator.userAgent
+      })
+    });
+  } catch (e) {
+    console.error('[logPdfError] No se pudo registrar el error de PDF:', e);
+  }
+}
+
 /**
  * Uploads a PDF to Supabase Storage and returns the public URL.
  */
@@ -890,7 +922,9 @@ async function uploadPDFToStorage(pdfBlob, fileName) {
 
     if (error) {
       console.error('Error de subida Supabase (Detalle):', error);
-      throw error;
+      const wrapped = new Error(error.message || 'Error subiendo a Supabase Storage');
+      wrapped.stage = 'supabase_upload';
+      throw wrapped;
     }
 
     console.log('Subida exitosa, obteniendo URL pública para:', fileName);
@@ -902,7 +936,8 @@ async function uploadPDFToStorage(pdfBlob, fileName) {
     return publicUrl;
   } catch (err) {
     console.error('Supabase Storage Exception:', err);
-    return null;
+    if (!err.stage) err.stage = 'supabase_upload';
+    throw err;
   }
 }
 
