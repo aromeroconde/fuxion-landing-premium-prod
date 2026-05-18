@@ -759,7 +759,8 @@ async function saveLead(e) {
       console.log('--- Iniciando Procesamiento de PDF ---');
       submitBtn.textContent = 'Personalizando tu Plan... ⏳';
       const pdfBlob = await generatePDFAttachment();
-      const fileName = `Reporte_${name.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+      const safeName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+      const fileName = `Reporte_${safeName}_${Date.now()}.pdf`;
 
       submitBtn.textContent = 'Guardando en la Nube... ☁️';
       pdfUrl = await uploadPDFToStorage(pdfBlob, fileName);
