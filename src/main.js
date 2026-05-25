@@ -1,5 +1,4 @@
 import './style.css'
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { createClient } from '@supabase/supabase-js'
 import emailjs from '@emailjs/browser'
 import knowledge from './knowledge.json'
@@ -21,15 +20,39 @@ if (EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
 
 // --- Chatbot Logic ---
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-const MODEL_NAME = import.meta.env.VITE_GEMINI_MODEL || 'gemini-flash-latest'
+const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || 'gpt-4o-mini'
+const PROXY_URL = import.meta.env.VITE_PROXY_URL
+const PROXY_TOKEN = import.meta.env.VITE_PROXY_TOKEN
 
-let genAI = null
-let model = null
-if (API_KEY && API_KEY !== 'your_api_key_here') {
-  genAI = new GoogleGenerativeAI(API_KEY)
-  model = genAI.getGenerativeModel({ model: MODEL_NAME })
+// Wrapper que imita model.startChat() de @google/generative-ai
+// pero usa el proxy centralizado con OpenAI. La API key nunca sale del servidor.
+function createProxyChat({ history = [] } = {}) {
+  const messages = history.map(m => ({
+    role: m.role === 'model' ? 'assistant' : 'user',
+    content: m.parts.map(p => p.text).join('')
+  }))
+
+  return {
+    sendMessage: async (text) => {
+      messages.push({ role: 'user', content: text })
+      const res = await fetch(`${PROXY_URL}/proxy/openai/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-proxy-token': PROXY_TOKEN,
+        },
+        body: JSON.stringify({ model: OPENAI_MODEL, messages }),
+      })
+      if (!res.ok) throw new Error(`Proxy error: ${res.status}`)
+      const data = await res.json()
+      const responseText = data.choices[0].message.content
+      messages.push({ role: 'assistant', content: responseText })
+      return { response: { text: () => responseText } }
+    }
+  }
 }
+
+const model = (PROXY_URL && PROXY_TOKEN) ? { startChat: createProxyChat } : null
 
 const chatModal = document.getElementById('chat-modal')
 const chatMessages = document.getElementById('chat-messages')
