@@ -33,21 +33,27 @@ function createProxyChat({ history = [] } = {}) {
   }))
 
   return {
-    sendMessage: async (text) => {
+    sendMessage: async (text, { signal } = {}) => {
       messages.push({ role: 'user', content: text })
-      const res = await fetch(`${PROXY_URL}/proxy/openai/v1/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-proxy-token': PROXY_TOKEN,
-        },
-        body: JSON.stringify({ model: OPENAI_MODEL, messages }),
-      })
-      if (!res.ok) throw new Error(`Proxy error: ${res.status}`)
-      const data = await res.json()
-      const responseText = data.choices[0].message.content
-      messages.push({ role: 'assistant', content: responseText })
-      return { response: { text: () => responseText } }
+      try {
+        const res = await fetch(`${PROXY_URL}/proxy/openai/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-proxy-token': PROXY_TOKEN,
+          },
+          body: JSON.stringify({ model: OPENAI_MODEL, messages }),
+          signal,
+        })
+        if (!res.ok) throw new Error(`Proxy error: ${res.status}`)
+        const data = await res.json()
+        const responseText = data.choices[0].message.content
+        messages.push({ role: 'assistant', content: responseText })
+        return { response: { text: () => responseText } }
+      } catch (err) {
+        messages.pop() // Revertir el push del usuario si el fetch falló
+        throw err
+      }
     }
   }
 }
@@ -212,8 +218,10 @@ async function extractUserName() {
 async function generateReport() {
   addMessage('🧬 Generando tu Plan de Transformación Personalizado...', true)
 
-  try {
-    const jsonPrompt = `
+  const MAX_ATTEMPTS = 3;
+  let lastError;
+
+  const jsonPrompt = `
       Genera el REPORTE DE BIENESTAR PREMIUM (JSON) personalizado para ${userName}.
       Considéra su relación PESO/ESTATURA para dar un diagnóstico preciso.
       IMPORTANTE: Los productos FuXion recomendados DEBEN incluirse dentro de los pasos de la "routine".
@@ -269,38 +277,64 @@ async function generateReport() {
       }
     `;
 
-    const result = await chatSession.sendMessage(jsonPrompt);
-    let text = result.response.text();
-    let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
-    const firstBrace = cleanText.indexOf('{');
-    const lastBrace = cleanText.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45_000);
 
-    const data = JSON.parse(cleanText);
-    currentReportData = data;
+    try {
+      if (attempt > 1) console.log(`[Reporte] Reintentando... (${attempt}/${MAX_ATTEMPTS})`);
 
-    // Mostrar el modal solo con el formulario; el resumen se revela tras el envío
-    document.getElementById('report-title').textContent = '¡Tu Análisis está Listo!';
-    reportAgeBadge.innerHTML = '<span>Ingresa tus datos para ver tu Plan Personalizado</span>';
+      const result = await chatSession.sendMessage(jsonPrompt, { signal: controller.signal });
+      clearTimeout(timeoutId);
 
-    const leadFormIntro = leadFormContent.querySelector('p');
-    if (leadFormIntro) {
-      leadFormIntro.innerHTML = 'Ingresa tus datos para <strong>ver tu Plan de Transformación</strong> y recibir una copia por email.';
+      let text = result.response.text();
+      let cleanText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const firstBrace = cleanText.indexOf('{');
+      const lastBrace = cleanText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+
+      const data = JSON.parse(cleanText);
+      currentReportData = data;
+
+      // Mostrar el modal solo con el formulario; el resumen se revela tras el envío
+      document.getElementById('report-title').textContent = '¡Tu Análisis está Listo!';
+      reportAgeBadge.innerHTML = '<span>Ingresa tus datos para ver tu Plan Personalizado</span>';
+
+      const leadFormIntro = leadFormContent.querySelector('p');
+      if (leadFormIntro) {
+        leadFormIntro.innerHTML = 'Ingresa tus datos para <strong>ver tu Plan de Transformación</strong> y recibir una copia por email.';
+      }
+
+      document.querySelector('.report-tabs').style.display = 'none';
+      document.querySelector('.report-body').style.display = 'none';
+
+      leadFormContent.style.display = 'block';
+      leadSuccess.style.display = 'none';
+
+      chatModal.style.display = 'none';
+      reportModal.style.display = 'block';
+      return;
+
+    } catch (err) {
+      clearTimeout(timeoutId);
+      const msg = err.name === 'AbortError'
+        ? `Timeout en intento ${attempt}/${MAX_ATTEMPTS} (proxy > 45s)`
+        : err.message;
+      console.error(`[Reporte] Intento ${attempt}/${MAX_ATTEMPTS} fallido —`, msg);
+      lastError = new Error(msg);
+      if (attempt < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 2000 * attempt));
     }
-
-    document.querySelector('.report-tabs').style.display = 'none';
-    document.querySelector('.report-body').style.display = 'none';
-
-    leadFormContent.style.display = 'block';
-    leadSuccess.style.display = 'none';
-
-    chatModal.style.display = 'none';
-    reportModal.style.display = 'block';
-
-  } catch (error) {
-    console.error('Report Generation Error:', error);
-    addMessage('Hubo un problema al generar el tablero visual. Por favor, hablemos por WhatsApp para darte los resultados.', true);
   }
+
+  // Todos los intentos fallaron
+  const finalMsg = lastError?.message || 'Error desconocido';
+  console.error('[Reporte] Todos los intentos fallaron:', finalMsg);
+  logPdfError(
+    'report_generation',
+    `Falló tras ${MAX_ATTEMPTS} intentos. Último error: ${finalMsg}`,
+    { goal: currentGoal }
+  );
+  addMessage('Hubo un problema al generar el tablero visual. Por favor, hablemos por WhatsApp para darte los resultados.', true);
 }
 
 function populateReportModal(data) {
