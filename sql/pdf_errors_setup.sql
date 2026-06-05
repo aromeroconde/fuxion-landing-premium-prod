@@ -25,3 +25,10 @@ CREATE POLICY "anon_can_insert_pdf_errors"
   FOR INSERT
   TO anon
   WITH CHECK (true);
+
+-- GRANTs explícitos: sin esto, PostgREST devuelve 404 al rol anon aunque la policy exista.
+GRANT INSERT ON public.pdf_errors TO anon;
+GRANT USAGE, SELECT ON SEQUENCE public.pdf_errors_id_seq TO anon;
+
+-- Forzar refresh del cache de schema de PostgREST.
+NOTIFY pgrst, 'reload schema';
